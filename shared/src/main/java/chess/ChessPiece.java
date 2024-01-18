@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * Represents a single chess piece
@@ -55,6 +56,12 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        return new ArrayList<>();
+        ChessPiece myPiece = board.getPiece(myPosition);
+        HashSet<ChessMove> possibleMoves = new HashSet<>();
+        if (myPiece.getPieceType() == PieceType.BISHOP){
+
+            //ChessMove option = new ChessMove(myPosition, spaceOption, NULL);
+        }
+        return possibleMoves;
     }
 }
