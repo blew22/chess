@@ -19,6 +19,11 @@ public class ChessMove {
         throw new RuntimeException("not implemented");
     }
 
+//    @Override
+//    public String toString() {
+//        return "{" + getEndPosition().getRow() + ", " + getEndPosition().getColumn() + "}";
+//    }
+
     /**
      * @return ChessPosition of ending location
      */
@@ -35,4 +40,7 @@ public class ChessMove {
     public ChessPiece.PieceType getPromotionPiece() {
         throw new RuntimeException("Not implemented");
     }
+
+
+
 }
