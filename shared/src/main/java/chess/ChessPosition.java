@@ -16,6 +16,10 @@ public class ChessPosition {
         this.col = col;
     }
 
+    public boolean inBounds(){
+        return (this.getColumn() < 8 && this.getColumn() >= 0) && (this.getRow() < 8 && this.getRow() > 0);
+    }
+
     /**
      * @return which row this position is in
      * 1 codes for the bottom row
