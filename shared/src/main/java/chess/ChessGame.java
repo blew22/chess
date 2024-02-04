@@ -110,6 +110,7 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        TeamColor teamMoving = board.getPiece(move.getStartPosition()).getTeamColor();
 //        Collection<ChessMove> validMoves = validMoves(move.getStartPosition());
 //        //if move not in valid moves, throw error. else, make move
 //        if (validMoves.contains(move)) {
@@ -119,6 +120,13 @@ public class ChessGame {
 //            throw new InvalidMoveException();
 //        }
         moveHelper(move, board);
+        //promote pawns after move is made
+        //if promotion piece is not null
+        if(move.getPromotionPiece() != null){
+            //  remove piece in end position & replace with promotion piece type
+            board.removePiece(move.getEndPosition());
+            board.addPiece(move.getEndPosition(), new ChessPiece(teamMoving, move.promotionPiece));
+        }
 
     }
 
