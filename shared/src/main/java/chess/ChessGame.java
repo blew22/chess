@@ -1,9 +1,6 @@
 package chess;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -52,6 +49,19 @@ public class ChessGame {
         BLACK
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessGame chessGame = (ChessGame) o;
+        return Objects.equals(getBoard(), chessGame.getBoard()) && getTeamTurn() == chessGame.getTeamTurn();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getBoard(), getTeamTurn());
+    }
+
     /**
      * Gets a valid moves for a piece at the given location
      *
@@ -64,24 +74,22 @@ public class ChessGame {
         Collection<ChessMove> possibleMoves = board.getPiece(startPosition).pieceMoves(board, startPosition);
         ArrayList<ChessMove> validMoves = new ArrayList<>();
 
-//        for (ChessMove move : possibleMoves) {
-//            ChessGame cloneGame = new ChessGame();
-//            cloneGame.setTeamTurn(team);
-//            cloneGame.board = new ChessBoard();
-//            cloneGame.board = this.board;
-//            cloneGame.tryMove(move, cloneGame.board);
-//            //do isInCheck test on the cloned board
-//            if (!cloneGame.isInCheck(team)) {
-//                validMoves.add(move);
-//            }
-//        }
         for (ChessMove move : possibleMoves) {
             //make move, check, and undo move
+            ChessPiece tempPiece = board.getPiece(move.getEndPosition());
+            boolean needToUndoCapture = false;
+            if(tempPiece != null){
+                needToUndoCapture = true;
+            }
             moveHelper(move, board);
             if (!isInCheck(team)) {
                 validMoves.add(move);
             }
             undoMove(move);
+            //make sure to replace any piece that was captured
+            if(needToUndoCapture){
+                board.addPiece(move.getEndPosition(), tempPiece);
+            }
         }
         return validMoves;
     }
