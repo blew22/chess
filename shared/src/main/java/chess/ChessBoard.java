@@ -12,8 +12,22 @@ public class ChessBoard {
     private ChessPiece[][] squares = new ChessPiece[9][9];
 
     public ChessBoard() {
-        
+
     }
+
+    public ChessPosition findPiece(ChessPiece.PieceType type, ChessGame.TeamColor team) {
+        for (int r = 1; r <= 8; r++) {
+            for (int c = 1; c <= 8; c++) {
+//                ChessPosition position = new ChessPosition(r, c);
+                if (squares[r][c].getPieceType() == type && squares[r][c].getTeamColor() == team) {
+                    return new ChessPosition(r, c);
+                }
+            }
+        }
+        return null;
+    }
+
+    ;
 
     /**
      * Adds a chess piece to the chessboard
@@ -25,7 +39,7 @@ public class ChessBoard {
         squares[position.getRow()][position.getColumn()] = piece;
     }
 
-    public void removePiece(ChessPosition position){
+    public void removePiece(ChessPosition position) {
         squares[position.getRow()][position.getColumn()] = null;
     }
 
@@ -77,7 +91,7 @@ public class ChessBoard {
         this.addPiece(new ChessPosition(1, 6), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP));
         this.addPiece(new ChessPosition(1, 7), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT));
         this.addPiece(new ChessPosition(1, 8), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
-        for( int i = 1; i <= 8; i++){
+        for (int i = 1; i <= 8; i++) {
             this.addPiece(new ChessPosition(2, i), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
         }
 
@@ -90,7 +104,7 @@ public class ChessBoard {
         this.addPiece(new ChessPosition(8, 6), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP));
         this.addPiece(new ChessPosition(8, 7), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT));
         this.addPiece(new ChessPosition(8, 8), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK));
-        for( int i = 1; i <= 8; i++){
+        for (int i = 1; i <= 8; i++) {
             this.addPiece(new ChessPosition(7, i), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
         }
     }

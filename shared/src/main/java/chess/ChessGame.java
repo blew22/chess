@@ -1,7 +1,6 @@
 package chess;
 
 import java.util.Collection;
-import java.lang.String;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -11,7 +10,7 @@ import java.lang.String;
  */
 public class ChessGame {
     private
-        ChessBoard board;
+    ChessBoard board;
     TeamColor teamTurn;
 
     public ChessGame() {
@@ -22,7 +21,7 @@ public class ChessGame {
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        throw new RuntimeException("Not implemented");
+        return teamTurn;
     }
 
     /**
@@ -50,7 +49,7 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        return board.getPiece(startPosition).pieceMoves(board, startPosition);
     }
 
     /**
@@ -74,7 +73,7 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        if(teamColor == TeamColor.WHITE){
+        if (teamColor == TeamColor.WHITE) {
             return true;
         } else {
             return false;
@@ -88,7 +87,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        return (isInCheck(teamColor) && isInStalemate(teamColor));
     }
 
     /**
@@ -99,7 +98,8 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        //Returns true if the given team has no legal moves and it is currently that team’s turn.
+        return false;
     }
 
     /**
