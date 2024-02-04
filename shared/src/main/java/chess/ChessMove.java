@@ -33,7 +33,7 @@ private
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ChessMove chessMove = (ChessMove) o;
-        return (getEndPosition() == chessMove.getEndPosition() && getStartPosition() == chessMove.getStartPosition() && getPromotionPiece() == chessMove.getPromotionPiece());
+        return Objects.equals(getEndPosition(), chessMove.getEndPosition()) && Objects.equals(getStartPosition(), chessMove.getStartPosition()) && getPromotionPiece() == chessMove.getPromotionPiece();
     }
 
     @Override

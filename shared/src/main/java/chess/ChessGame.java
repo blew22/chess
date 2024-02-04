@@ -33,8 +33,8 @@ public class ChessGame {
         teamTurn = team;
     }
 
-    public void changeTeamTurn(){
-        if (getTeamTurn() == TeamColor.WHITE){
+    public void changeTeamTurn() {
+        if (getTeamTurn() == TeamColor.WHITE) {
             setTeamTurn(TeamColor.BLACK);
         } else {
             setTeamTurn(TeamColor.WHITE);
@@ -78,7 +78,7 @@ public class ChessGame {
             //make move, check, and undo move
             ChessPiece tempPiece = board.getPiece(move.getEndPosition());
             boolean needToUndoCapture = false;
-            if(tempPiece != null){
+            if (tempPiece != null) {
                 needToUndoCapture = true;
             }
             moveHelper(move, board);
@@ -87,14 +87,14 @@ public class ChessGame {
             }
             undoMove(move);
             //make sure to replace any piece that was captured
-            if(needToUndoCapture){
+            if (needToUndoCapture) {
                 board.addPiece(move.getEndPosition(), tempPiece);
             }
         }
         return validMoves;
     }
 
-    private void undoMove(ChessMove move){
+    private void undoMove(ChessMove move) {
         moveHelper(new ChessMove(move.getEndPosition(), move.getStartPosition(), move.promotionPiece), board);
     }
 
@@ -111,30 +111,31 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         TeamColor teamMoving = board.getPiece(move.getStartPosition()).getTeamColor();
-//        Collection<ChessMove> validMoves = validMoves(move.getStartPosition());
-//        //if move not in valid moves, throw error. else, make move
-//        if (validMoves.contains(move)) {
-//            moveHelper(move, board);
-//            changeTeamTurn();
-//        } else {
-//            throw new InvalidMoveException();
-//        }
-        moveHelper(move, board);
-        //promote pawns after move is made
-        //if promotion piece is not null
-        if(move.getPromotionPiece() != null){
-            //  remove piece in end position & replace with promotion piece type
-            board.removePiece(move.getEndPosition());
-            board.addPiece(move.getEndPosition(), new ChessPiece(teamMoving, move.promotionPiece));
+        if(teamMoving != teamTurn){throw new InvalidMoveException("not your turn");}
+
+        Collection<ChessMove> validMoves = validMoves(move.getStartPosition());
+        //if move not in valid moves, throw error. else, make move
+        if (validMoves.contains(move)) {
+            moveHelper(move, board);
+            changeTeamTurn();
+
+            //promote pawns after move is made
+            //if promotion piece is not null
+            if (move.getPromotionPiece() != null) {
+                //  remove piece in end position & replace with promotion piece type
+                board.removePiece(move.getEndPosition());
+                board.addPiece(move.getEndPosition(), new ChessPiece(teamMoving, move.promotionPiece));
+            }
+        } else {
+            throw new InvalidMoveException();
         }
-
     }
 
-    private void tryMove(ChessMove move, ChessBoard differentBoard) {
-        moveHelper(move, differentBoard);
-    }
+//    private void tryMove(ChessMove move, ChessBoard differentBoard) {
+//        moveHelper(move, differentBoard);
+//    }
 
-    private TeamColor getOppositeTeamColor(TeamColor teamColor){
+    private TeamColor getOppositeTeamColor(TeamColor teamColor) {
         TeamColor opponentColor;
         if (teamColor == TeamColor.WHITE) {
             opponentColor = TeamColor.BLACK;
@@ -167,7 +168,7 @@ public class ChessGame {
                     return true;
                 }
             }
-        };
+        }
         return false;
     }
 
@@ -190,14 +191,13 @@ public class ChessGame {
      */
     public boolean isInStalemate(TeamColor teamColor) {
         //Returns true if the given team has no legal moves and it is currently that team’s turn.
-        TeamColor opponentColor = getOppositeTeamColor(teamColor);
         //get map of all pieces on team and their position
         Map<ChessPosition, ChessPiece> teamPieces = board.getTeamPieces(teamColor);
         //for each piece, check valid moves
-        for(Map.Entry<ChessPosition/*key*/, ChessPiece/*value*/> entry : teamPieces.entrySet()){
+        for (Map.Entry<ChessPosition/*key*/, ChessPiece/*value*/> entry : teamPieces.entrySet()) {
             Collection<ChessMove> legalMoves = validMoves(entry.getKey());
             //if valid moves is not empty, return false
-            if(!legalMoves.isEmpty()) return false;
+            if (!legalMoves.isEmpty()) return false;
         }
         return true;
     }
