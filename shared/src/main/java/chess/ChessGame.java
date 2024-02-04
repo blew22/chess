@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Vector;
@@ -35,6 +36,14 @@ public class ChessGame {
         teamTurn = team;
     }
 
+    public void changeTeamTurn(){
+        if (getTeamTurn() == TeamColor.WHITE){
+            setTeamTurn(TeamColor.BLACK);
+        } else {
+            setTeamTurn(TeamColor.WHITE);
+        }
+    }
+
     /**
      * Enum identifying the 2 possible teams in a chess game
      */
@@ -51,10 +60,37 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        return board.getPiece(startPosition).pieceMoves(board, startPosition);
+        TeamColor team = board.getPiece(startPosition).getTeamColor();
+        Collection<ChessMove> possibleMoves = board.getPiece(startPosition).pieceMoves(board, startPosition);
+        ArrayList<ChessMove> validMoves = new ArrayList<>();
+
+//        for (ChessMove move : possibleMoves) {
+//            ChessGame cloneGame = new ChessGame();
+//            cloneGame.setTeamTurn(team);
+//            cloneGame.board = new ChessBoard();
+//            cloneGame.board = this.board;
+//            cloneGame.tryMove(move, cloneGame.board);
+//            //do isInCheck test on the cloned board
+//            if (!cloneGame.isInCheck(team)) {
+//                validMoves.add(move);
+//            }
+//        }
+        for (ChessMove move : possibleMoves) {
+            //make move, check, and undo move
+            moveHelper(move, board);
+            if (!isInCheck(team)) {
+                validMoves.add(move);
+            }
+            undoMove(move);
+        }
+        return validMoves;
     }
 
-    private void moveHelper (ChessMove move, ChessBoard board){
+    private void undoMove(ChessMove move){
+        moveHelper(new ChessMove(move.getEndPosition(), move.getStartPosition(), move.promotionPiece), board);
+    }
+
+    private void moveHelper(ChessMove move, ChessBoard board) {
         board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
         board.removePiece(move.getStartPosition());
     }
@@ -66,12 +102,20 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-
+//        Collection<ChessMove> validMoves = validMoves(move.getStartPosition());
+//        //if move not in valid moves, throw error. else, make move
+//        if (validMoves.contains(move)) {
+//            moveHelper(move, board);
+//            changeTeamTurn();
+//        } else {
+//            throw new InvalidMoveException();
+//        }
         moveHelper(move, board);
 
+    }
 
-
-
+    private void tryMove(ChessMove move, ChessBoard differentBoard) {
+        moveHelper(move, differentBoard);
     }
 
     /**
@@ -83,22 +127,26 @@ public class ChessGame {
     public boolean isInCheck(TeamColor teamColor) {
         ChessBoard potentialBoard = board;
         TeamColor opponentColor;
-        if (teamColor == TeamColor.WHITE) {opponentColor = TeamColor.BLACK;}
-        else {opponentColor = TeamColor.WHITE;}
+        if (teamColor == TeamColor.WHITE) {
+            opponentColor = TeamColor.BLACK;
+        } else {
+            opponentColor = TeamColor.WHITE;
+        }
         ChessPosition kingPosition = potentialBoard.findPiece(ChessPiece.PieceType.KING, teamColor);
 
         //get map of opposite team piece/position pairs
         Map<ChessPosition, ChessPiece> opponentPieces = potentialBoard.getTeamPieces(opponentColor);
         //for each entry, get its possible moves
-        for(Map.Entry<ChessPosition /*key*/, ChessPiece/*value*/> entry : opponentPieces.entrySet()) {
+        for (Map.Entry<ChessPosition /*key*/, ChessPiece/*value*/> entry : opponentPieces.entrySet()) {
             Collection<ChessMove> possibleMoves = entry.getValue().pieceMoves(potentialBoard, entry.getKey());
             //for each possible move, check if it captures the king
-            for(ChessMove possibleMove : possibleMoves){
-                if(possibleMove.getEndPosition().equals(kingPosition)){
+            for (ChessMove possibleMove : possibleMoves) {
+                if (possibleMove.getEndPosition().equals(kingPosition)) {
                     return true;
                 }
             }
-        };
+        }
+        ;
 //        for (ChessPiece piece : opponentPieces) {
 //            Collection<ChessMove> possibleMoves = piece.pieceMoves(potentialBoard, potentialBoard.findPiece(piece.getPieceType(), TeamColor.BLACK));
 //            //for each possible move, check if it captures the king
