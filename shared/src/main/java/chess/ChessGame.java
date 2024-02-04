@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.Vector;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -59,11 +60,25 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        ChessBoard potentialBoard = board;
 
-        board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
-        board.removePiece(move.getStartPosition());
+        potentialBoard.addPiece(move.getEndPosition(), potentialBoard.getPiece(move.getStartPosition()));
+        potentialBoard.removePiece(move.getStartPosition());
 
-//        throw new RuntimeException("Not implemented");
+        ChessPosition kingPosition = potentialBoard.findPiece(ChessPiece.PieceType.KING, TeamColor.WHITE);
+        //get vector of opposite team pieces
+        Collection<ChessPiece> opponentPieces = potentialBoard.getTeamPieces(TeamColor.BLACK, potentialBoard);
+        //for each piece, get its possible moves
+        for (ChessPiece piece : opponentPieces) {
+            Collection<ChessMove> possibleMoves = piece.pieceMoves(potentialBoard, potentialBoard.findPiece(piece.getPieceType(), TeamColor.BLACK));
+            //for each possible move, check if it captures the king
+            for(ChessMove possibleMove : possibleMoves){
+                if(possibleMove.getEndPosition() == kingPosition){
+                    throw new InvalidMoveException();
+                }
+            }
+        }
+
     }
 
     /**

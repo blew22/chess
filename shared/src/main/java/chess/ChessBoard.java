@@ -1,6 +1,8 @@
 package chess;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Vector;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -19,15 +21,28 @@ public class ChessBoard {
         for (int r = 1; r <= 8; r++) {
             for (int c = 1; c <= 8; c++) {
 //                ChessPosition position = new ChessPosition(r, c);
-                if (squares[r][c].getPieceType() == type && squares[r][c].getTeamColor() == team) {
-                    return new ChessPosition(r, c);
+                if(squares[r][c] != null) {
+                    if (squares[r][c].getPieceType() == type && squares[r][c].getTeamColor() == team) {
+                        return new ChessPosition(r, c);
+                    }
                 }
             }
         }
         return null;
-    }
-
-    ;
+    };
+    // returns a vector of all pieces on the given team on the given board
+    public Collection<ChessPiece> getTeamPieces(ChessGame.TeamColor team, ChessBoard board){
+        Vector<ChessPiece> teamPieces = new Vector<>();
+        for (int r = 1; r <= 8; r++) {
+            for (int c = 1; c <= 8; c++) {
+//                ChessPosition position = new ChessPosition(r, c);
+                if (squares[r][c] != null && squares[r][c].getTeamColor() == team) {
+                    teamPieces.add(squares[r][c]);
+                }
+            }
+        }
+        return teamPieces;
+    };
 
     /**
      * Adds a chess piece to the chessboard
