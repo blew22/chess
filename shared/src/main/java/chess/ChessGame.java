@@ -126,6 +126,16 @@ public class ChessGame {
         moveHelper(move, differentBoard);
     }
 
+    private TeamColor getOppositeTeamColor(TeamColor teamColor){
+        TeamColor opponentColor;
+        if (teamColor == TeamColor.WHITE) {
+            opponentColor = TeamColor.BLACK;
+        } else {
+            opponentColor = TeamColor.WHITE;
+        }
+        return opponentColor;
+    }
+
     /**
      * Determines if the given team is in check
      *
@@ -134,18 +144,14 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         ChessBoard potentialBoard = board;
-        TeamColor opponentColor;
-        if (teamColor == TeamColor.WHITE) {
-            opponentColor = TeamColor.BLACK;
-        } else {
-            opponentColor = TeamColor.WHITE;
-        }
+        TeamColor opponentColor = getOppositeTeamColor(teamColor);
         ChessPosition kingPosition = potentialBoard.findPiece(ChessPiece.PieceType.KING, teamColor);
 
         //get map of opposite team piece/position pairs
         Map<ChessPosition, ChessPiece> opponentPieces = potentialBoard.getTeamPieces(opponentColor);
         //for each entry, get its possible moves
         for (Map.Entry<ChessPosition /*key*/, ChessPiece/*value*/> entry : opponentPieces.entrySet()) {
+            //use valid moves instead of piece moves??
             Collection<ChessMove> possibleMoves = entry.getValue().pieceMoves(potentialBoard, entry.getKey());
             //for each possible move, check if it captures the king
             for (ChessMove possibleMove : possibleMoves) {
@@ -153,17 +159,7 @@ public class ChessGame {
                     return true;
                 }
             }
-        }
-        ;
-//        for (ChessPiece piece : opponentPieces) {
-//            Collection<ChessMove> possibleMoves = piece.pieceMoves(potentialBoard, potentialBoard.findPiece(piece.getPieceType(), TeamColor.BLACK));
-//            //for each possible move, check if it captures the king
-//            for(ChessMove possibleMove : possibleMoves){
-//                if(possibleMove.getEndPosition() == kingPosition){
-//                    return true;
-//                }
-//            }
-//        }
+        };
         return false;
     }
 
@@ -186,7 +182,16 @@ public class ChessGame {
      */
     public boolean isInStalemate(TeamColor teamColor) {
         //Returns true if the given team has no legal moves and it is currently that team’s turn.
-        return false;
+        TeamColor opponentColor = getOppositeTeamColor(teamColor);
+        //get map of all pieces on team and their position
+        Map<ChessPosition, ChessPiece> teamPieces = board.getTeamPieces(teamColor);
+        //for each piece, check valid moves
+        for(Map.Entry<ChessPosition/*key*/, ChessPiece/*value*/> entry : teamPieces.entrySet()){
+            Collection<ChessMove> legalMoves = validMoves(entry.getKey());
+            //if valid moves is not empty, return false
+            if(!legalMoves.isEmpty()) return false;
+        }
+        return true;
     }
 
     /**
