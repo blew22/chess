@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.lang.String;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -9,6 +10,9 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessGame {
+    private
+        ChessBoard board;
+    TeamColor teamTurn;
 
     public ChessGame() {
 
@@ -27,7 +31,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        throw new RuntimeException("Not implemented");
+        teamTurn = team;
     }
 
     /**
@@ -56,7 +60,11 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+
+        board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
+        board.removePiece(move.getStartPosition());
+
+//        throw new RuntimeException("Not implemented");
     }
 
     /**
@@ -66,7 +74,11 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if(teamColor == TeamColor.WHITE){
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -96,7 +108,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        this.board = board;
     }
 
     /**
@@ -105,6 +117,6 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        return board;
     }
 }
