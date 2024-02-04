@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Vector;
 
 /**
@@ -53,6 +54,11 @@ public class ChessGame {
         return board.getPiece(startPosition).pieceMoves(board, startPosition);
     }
 
+    private void moveHelper (ChessMove move, ChessBoard board){
+        board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
+        board.removePiece(move.getStartPosition());
+    }
+
     /**
      * Makes a move in a chess game
      *
@@ -60,24 +66,11 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        ChessBoard potentialBoard = board;
 
-        potentialBoard.addPiece(move.getEndPosition(), potentialBoard.getPiece(move.getStartPosition()));
-        potentialBoard.removePiece(move.getStartPosition());
+        moveHelper(move, board);
 
-        ChessPosition kingPosition = potentialBoard.findPiece(ChessPiece.PieceType.KING, TeamColor.WHITE);
-        //get vector of opposite team pieces
-        Collection<ChessPiece> opponentPieces = potentialBoard.getTeamPieces(TeamColor.BLACK, potentialBoard);
-        //for each piece, get its possible moves
-        for (ChessPiece piece : opponentPieces) {
-            Collection<ChessMove> possibleMoves = piece.pieceMoves(potentialBoard, potentialBoard.findPiece(piece.getPieceType(), TeamColor.BLACK));
-            //for each possible move, check if it captures the king
-            for(ChessMove possibleMove : possibleMoves){
-                if(possibleMove.getEndPosition() == kingPosition){
-                    throw new InvalidMoveException();
-                }
-            }
-        }
+
+
 
     }
 
@@ -88,11 +81,34 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        if (teamColor == TeamColor.WHITE) {
-            return true;
-        } else {
-            return false;
-        }
+        ChessBoard potentialBoard = board;
+        TeamColor opponentColor;
+        if (teamColor == TeamColor.WHITE) {opponentColor = TeamColor.BLACK;}
+        else {opponentColor = TeamColor.WHITE;}
+        ChessPosition kingPosition = potentialBoard.findPiece(ChessPiece.PieceType.KING, teamColor);
+
+        //get map of opposite team piece/position pairs
+        Map<ChessPosition, ChessPiece> opponentPieces = potentialBoard.getTeamPieces(opponentColor);
+        //for each entry, get its possible moves
+        for(Map.Entry<ChessPosition /*key*/, ChessPiece/*value*/> entry : opponentPieces.entrySet()) {
+            Collection<ChessMove> possibleMoves = entry.getValue().pieceMoves(potentialBoard, entry.getKey());
+            //for each possible move, check if it captures the king
+            for(ChessMove possibleMove : possibleMoves){
+                if(possibleMove.getEndPosition().equals(kingPosition)){
+                    return true;
+                }
+            }
+        };
+//        for (ChessPiece piece : opponentPieces) {
+//            Collection<ChessMove> possibleMoves = piece.pieceMoves(potentialBoard, potentialBoard.findPiece(piece.getPieceType(), TeamColor.BLACK));
+//            //for each possible move, check if it captures the king
+//            for(ChessMove possibleMove : possibleMoves){
+//                if(possibleMove.getEndPosition() == kingPosition){
+//                    return true;
+//                }
+//            }
+//        }
+        return false;
     }
 
     /**

@@ -443,7 +443,7 @@ public class ChessPiece {
                 }
                 ChessPosition slantRight = new ChessPosition(currentRow + 1, currentCol + 1);
                 ChessPosition slantLeft = new ChessPosition(currentRow + 1, currentCol - 1);
-                if (board.getPiece(slantRight) != null && board.getPiece(slantRight).getTeamColor() == BLACK) {
+                if (slantRight.inBounds() && board.getPiece(slantRight) != null && board.getPiece(slantRight).getTeamColor() == BLACK) {
                     if(slantRight.getRow() == 8) {
                         //needs promotion
                         possibleMoves.add(new ChessMove(myPosition, slantRight, PieceType.QUEEN));
@@ -455,7 +455,7 @@ public class ChessPiece {
                         possibleMoves.add(attackRight);
                     }
                 }
-                if (board.getPiece(slantLeft) != null && board.getPiece(slantLeft).getTeamColor() == BLACK) {
+                if (slantLeft.inBounds() && board.getPiece(slantLeft) != null && board.getPiece(slantLeft).getTeamColor() == BLACK) {
                     if(slantLeft.getRow() == 8){
                         //needs promotion
                         possibleMoves.add(new ChessMove(myPosition, slantLeft, PieceType.QUEEN));
@@ -490,7 +490,7 @@ public class ChessPiece {
                 }
                 ChessPosition slantRight = new ChessPosition(currentRow - 1, currentCol + 1);
                 ChessPosition slantLeft = new ChessPosition(currentRow - 1, currentCol - 1);
-                if (board.getPiece(slantRight) != null && board.getPiece(slantRight).getTeamColor() == WHITE) {
+                if (slantRight.inBounds() && board.getPiece(slantRight) != null && board.getPiece(slantRight).getTeamColor() == WHITE) {
                     if(slantRight.getRow() == 1){
                         //needs promotion
                         possibleMoves.add(new ChessMove(myPosition, slantRight, PieceType.QUEEN));
@@ -502,7 +502,7 @@ public class ChessPiece {
                         possibleMoves.add(attackRight);
                     }
                 }
-                if (board.getPiece(slantLeft) != null && board.getPiece(slantLeft).getTeamColor() == WHITE) {
+                if (slantLeft.inBounds() && board.getPiece(slantLeft) != null && board.getPiece(slantLeft).getTeamColor() == WHITE) {
                     if(slantLeft.getRow() == 1){
                         //needs promotion
                         possibleMoves.add(new ChessMove(myPosition, slantLeft, PieceType.QUEEN));
