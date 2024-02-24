@@ -1,8 +1,19 @@
 package server;
 
 import spark.*;
+import com.google.gson.Gson;
+import service.Service;
+import dataAccess.DataAccess;
+import user.User;
+
 
 public class Server {
+
+    private final Service service;
+
+    public Server() {
+        this.service = new Service();
+    }
 
     public static void main(String[] args) {
         new Server().run(8080);
@@ -13,12 +24,7 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
-        Spark.post("/db", new Route() {
-            @Override
-            public Object handle(Request request, Response response) throws Exception {
-                return null;
-            }
-        });
+        Spark.post("/db", this::clear);
 
         Spark.awaitInitialization();
         return Spark.port();
@@ -27,5 +33,10 @@ public class Server {
     public void stop() {
         Spark.stop();
         Spark.awaitStop();
+    }
+
+    private Object clear(Request req, Response res){
+        service.clear();
+        return "";
     }
 }
