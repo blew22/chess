@@ -20,6 +20,7 @@ public class MemoryDataAccess implements DataAccess {
 
     public Object registerUser(User user){
         User newUser = new User(user.getUsername(), user.getPassword(), user.getEmail());
+        users.add(user);
         String authToken = "1234";
         RegisterResponse response = new RegisterResponse(authToken, newUser);
         return response;

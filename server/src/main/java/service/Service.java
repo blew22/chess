@@ -2,6 +2,8 @@ package service;
 
 import dataAccess.DataAccess;
 import dataAccess.MemoryDataAccess;
+import exception.ResponseException;
+import responses.ErrorResponse;
 import user.User;
 public class Service {
 
@@ -14,9 +16,11 @@ public class Service {
         dataAccess.clear();
     }
 
-    public Object registerUser(User user){
+    public Object registerUser(User user) throws ResponseException {
         if(dataAccess.userExists(user)) {
-            return -1;
+//            ErrorResponse errorResponse = new ErrorResponse("already taken");
+//            return errorResponse;
+            throw new ResponseException(403, "Forbbiden");
             //error
         } else {
             //create user, return auth

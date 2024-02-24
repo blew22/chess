@@ -1,6 +1,7 @@
 package user;
 
 import java.lang.String;
+import java.util.Objects;
 
 public class User {
 
@@ -31,6 +32,15 @@ public class User {
     public int getAuthToken() {
         return authToken;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(getUsername(), user.getUsername()) && Objects.equals(getPassword(), user.getPassword()) && Objects.equals(getEmail(), user.getEmail());
+    }
+
 
     public void setAuthToken(int authToken) {
         this.authToken = authToken;
