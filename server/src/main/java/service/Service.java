@@ -14,8 +14,14 @@ public class Service {
         dataAccess.clear();
     }
 
-    public int registerUser(){
-        return dataAccess.registerUser();
-    }
+    public Object registerUser(User user){
+        if(dataAccess.userExists(user)) {
+            return -1;
+            //error
+        } else {
+            //create user, return auth
+            return dataAccess.registerUser(user);
+        }
+    };
 
 }

@@ -1,6 +1,9 @@
 package dataAccess;
 
 import java.util.ArrayList;
+import java.util.Objects;
+
+import responses.RegisterResponse;
 import user.User;
 import chess.ChessGame;
 
@@ -15,9 +18,15 @@ public class MemoryDataAccess implements DataAccess {
         games.clear();
     }
 
-    public int registerUser(){
-        int authToken = 1234;
-        return authToken;
+    public Object registerUser(User user){
+        User newUser = new User(user.getUsername(), user.getPassword(), user.getEmail());
+        String authToken = "1234";
+        RegisterResponse response = new RegisterResponse(authToken, newUser);
+        return response;
+    }
+
+    public boolean userExists(User user){
+        return users.contains(user);
     }
 
 }

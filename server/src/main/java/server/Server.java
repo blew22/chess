@@ -1,5 +1,7 @@
 package server;
 
+import responses.ClearResponse;
+import responses.RegisterResponse;
 import spark.*;
 import com.google.gson.Gson;
 import service.Service;
@@ -39,11 +41,13 @@ public class Server {
     private Object clear(Request req, Response res){
         service.clear();
         res.status(200);
-        return "";
+        ClearResponse response = new ClearResponse();
+        return new Gson().toJson(response);
     }
 
-    private Object registerUser(Request req, Response res){
-
-        return service.registerUser();
+    private Object registerUser(Request req, Response res){ //what are req and res doing? do i need to build my own classes?
+        var user = new Gson().fromJson(req.body(), User.class);
+        var response = service.registerUser(user);
+        return new Gson().toJson(response);
     }
 }
