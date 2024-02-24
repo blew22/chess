@@ -15,4 +15,9 @@ public class MemoryDataAccess implements DataAccess {
         games.clear();
     }
 
+    public int registerUser(){
+        int authToken = 1234;
+        return authToken;
+    }
+
 }

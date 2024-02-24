@@ -14,4 +14,8 @@ public class Service {
         dataAccess.clear();
     }
 
+    public int registerUser(){
+        return dataAccess.registerUser();
+    }
+
 }
