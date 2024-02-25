@@ -19,7 +19,7 @@ public class Service {
         if(dataAccess.userExists(user)) {
 //            ErrorResponse errorResponse = new ErrorResponse("already taken");
 //            return errorResponse;
-            throw new ResponseException(403, "Forbbiden");
+            throw new ResponseException(403, "Error: already taken");
             //error
         } else {
             //create user, return auth

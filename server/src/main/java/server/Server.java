@@ -63,7 +63,8 @@ public class Server {
             }
         } catch (ResponseException e) {
             res.status(e.StatusCode());
-            ErrorResponse response = new ErrorResponse("Error: already taken");
+//            res.body(e.getMessage());
+            ErrorResponse response = new ErrorResponse(e.getMessage());
             return new Gson().toJson(response);
         }
     }
