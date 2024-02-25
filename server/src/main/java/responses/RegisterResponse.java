@@ -1,18 +1,14 @@
 package responses;
 
-import user.User;
+import model.AuthData;
 
 public class RegisterResponse {
 
-    private String authToken;
+    String username;
+    String authToken;
 
-    private String username;
-
-    public RegisterResponse(String authToken, User user){
-        this.authToken = authToken;
-        this.username = user.getUsername();
+    public RegisterResponse(AuthData authData){
+        username = authData.username();
+        authToken = authData.authToken();
     }
-
-
-
 }

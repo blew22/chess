@@ -3,12 +3,10 @@ package server;
 import exception.ResponseException;
 import responses.ClearResponse;
 import responses.ErrorResponse;
-import responses.RegisterResponse;
 import spark.*;
 import com.google.gson.Gson;
 import service.Service;
-import dataAccess.DataAccess;
-import user.User;
+import model.User;
 
 
 public class Server {
@@ -22,6 +20,7 @@ public class Server {
     public static void main(String[] args) {
         new Server().run(8080);
     }
+
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 
@@ -46,7 +45,7 @@ public class Server {
         res.status(ex.StatusCode());
     }
 
-    private Object clear(Request req, Response res){
+    private Object clear(Request req, Response res) {
         service.clear();
         res.status(200);
         ClearResponse response = new ClearResponse();
@@ -56,9 +55,13 @@ public class Server {
     private Object registerUser(Request req, Response res) throws ResponseException { //what are req and res doing? do i need to build my own classes?
         try {
             var user = new Gson().fromJson(req.body(), User.class);
-            var response = service.registerUser(user);
-            return new Gson().toJson(response);
-        } catch(ResponseException e){
+            if (user.isValid()) {
+                var response = service.registerUser(user);
+                return new Gson().toJson(response);
+            } else {
+                throw new ResponseException(400, "Error: bad request");
+            }
+        } catch (ResponseException e) {
             res.status(e.StatusCode());
             ErrorResponse response = new ErrorResponse("Error: already taken");
             return new Gson().toJson(response);

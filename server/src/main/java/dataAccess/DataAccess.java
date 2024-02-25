@@ -1,7 +1,7 @@
 package dataAccess;
 
 import exception.ResponseException;
-import user.User;
+import model.User;
 
 public interface DataAccess {
 

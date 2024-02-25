@@ -3,8 +3,7 @@ package service;
 import dataAccess.DataAccess;
 import dataAccess.MemoryDataAccess;
 import exception.ResponseException;
-import responses.ErrorResponse;
-import user.User;
+import model.User;
 public class Service {
 
     private final DataAccess dataAccess = new MemoryDataAccess();

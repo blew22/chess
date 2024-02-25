@@ -1,10 +1,10 @@
 package dataAccess;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
+import model.AuthData;
 import responses.RegisterResponse;
-import user.User;
+import model.User;
 import chess.ChessGame;
 
 public class MemoryDataAccess implements DataAccess {
@@ -19,10 +19,11 @@ public class MemoryDataAccess implements DataAccess {
     }
 
     public Object registerUser(User user){
-        User newUser = new User(user.getUsername(), user.getPassword(), user.getEmail());
+        User newUser = new User(user.username(), user.password(), user.email());
         users.add(user);
         String authToken = "1234";
-        RegisterResponse response = new RegisterResponse(authToken, newUser);
+        AuthData newAuth = new AuthData(user.username());
+        RegisterResponse response = new RegisterResponse(newAuth);
         return response;
     }
 
