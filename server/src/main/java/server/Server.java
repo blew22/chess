@@ -29,6 +29,7 @@ public class Server {
         // Register your endpoints and handle exceptions here.
         Spark.delete("/db", this::clear);
         Spark.post("/user", this::registerUser);
+        Spark.post("/session", this::loginUser);
         Spark.exception(ResponseException.class, this::exceptionHandler);
 
 
@@ -68,4 +69,17 @@ public class Server {
             return new Gson().toJson(response);
         }
     }
+
+    private Object loginUser(Request req, Response res) throws ResponseException {
+        try {
+            var user = new Gson().fromJson(req.body(), User.class);
+            var response = service.loginUser(user);
+            return new Gson().toJson(response);
+        } catch (ResponseException e){
+            res.status(e.StatusCode());
+            ErrorResponse response = new ErrorResponse(e.getMessage());
+            return new Gson().toJson(response);
+        }
+    }
+
 }

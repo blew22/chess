@@ -11,4 +11,6 @@ public interface DataAccess {
 
     public boolean userExists(User user);
 
+    public Object loginUser(User user);
+
 }
