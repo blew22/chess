@@ -113,14 +113,15 @@ public class Server {
 
     private Object createGame(Request req, Response res) {
         CreateGameRequest gameRequest = new Gson().fromJson(req.body(), CreateGameRequest.class);
-        gameRequest.setAuthToken(req.headers("Authorization"));
+        gameRequest = gameRequest.setAuthToken(req.headers("Authorization"));
 
         try {
             var gameResponse = service.createGame(gameRequest);
             return new Gson().toJson(gameResponse);
         } catch (ResponseException e) {
             res.status(e.StatusCode());
-            return new ErrorResponse(e.getMessage());
+            ErrorResponse response = new ErrorResponse(e.getMessage());
+            return new Gson().toJson(response);
         }
     }
 

@@ -51,12 +51,12 @@ public class Service {
     }
 
     public Object createGame(CreateGameRequest gameRequest) throws ResponseException{
-//        if(dataAccess.isLoggedIn(gameRequest.authToken())) {
+        if(dataAccess.isLoggedIn(gameRequest.authToken())) {
             GameData gameData = new GameData(gameRequest.gameName());
             return dataAccess.createGame(gameData);
-//        } else {
-//            throw new ResponseException(401, "Error: unauthorized");
-//        }
+        } else {
+            throw new ResponseException(401, "Error: unauthorized");
+        }
     }
 
 }
