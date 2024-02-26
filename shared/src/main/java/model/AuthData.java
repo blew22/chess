@@ -8,10 +8,6 @@ public record AuthData(String username, String authToken) {
         this(username, createAuth());
     }
 
-//    public AuthData(String username, String authToken){
-//        this.username = username;
-//        this.authToken = authToken;
-//    }
 
     private static String createAuth() {
         UUID uuid = UUID.randomUUID();

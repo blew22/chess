@@ -5,6 +5,8 @@ import java.util.HashMap;
 
 import exception.ResponseException;
 import model.AuthData;
+import model.GameData;
+import responses.CreateGameResponse;
 import responses.RegisterResponse;
 import model.User;
 import chess.ChessGame;
@@ -13,9 +15,9 @@ public class MemoryDataAccess implements DataAccess {
 
     final private ArrayList<User> users = new ArrayList<User>();
 
-    final private ArrayList<ChessGame> games = new ArrayList<ChessGame>();
-
     final private HashMap<String, String> authorizations = new HashMap<>();
+
+    final private HashMap<Integer, GameData> games = new HashMap<Integer, GameData>();
 
     public void clear() {
         users.clear();
@@ -46,5 +48,10 @@ public class MemoryDataAccess implements DataAccess {
 
     public boolean isLoggedIn(String authToken){
         return authorizations.containsKey(authToken);
+    }
+
+    public Object createGame(GameData game){
+        games.put(game.gameID(), game);
+        return new CreateGameResponse(game.gameID());
     }
 }

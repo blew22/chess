@@ -3,7 +3,10 @@ package server;
 import com.google.gson.JsonSyntaxException;
 import exception.ResponseException;
 import model.AuthData;
+import model.GameData;
+import requests.CreateGameRequest;
 import responses.ClearResponse;
+import responses.CreateGameResponse;
 import responses.ErrorResponse;
 import responses.LogoutResponse;
 import spark.*;
@@ -34,6 +37,7 @@ public class Server {
         Spark.post("/user", this::registerUser);
         Spark.post("/session", this::loginUser);
         Spark.delete("/session", this::logoutUser);
+        Spark.post("/game", this::createGame);
 
         Spark.exception(ResponseException.class, this::exceptionHandler);
 
@@ -104,6 +108,19 @@ public class Server {
             res.status(e.StatusCode());
             ErrorResponse response = new ErrorResponse(e.getMessage());
             return new Gson().toJson(response);
+        }
+    }
+
+    private Object createGame(Request req, Response res) {
+        CreateGameRequest gameRequest = new Gson().fromJson(req.body(), CreateGameRequest.class);
+        gameRequest.setAuthToken(req.headers("Authorization"));
+
+        try {
+            var gameResponse = service.createGame(gameRequest);
+            return new Gson().toJson(gameResponse);
+        } catch (ResponseException e) {
+            res.status(e.StatusCode());
+            return new ErrorResponse(e.getMessage());
         }
     }
 

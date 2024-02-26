@@ -4,7 +4,9 @@ import dataAccess.DataAccess;
 import dataAccess.MemoryDataAccess;
 import exception.ResponseException;
 import model.AuthData;
+import model.GameData;
 import model.User;
+import requests.CreateGameRequest;
 
 public class Service {
 
@@ -46,6 +48,15 @@ public class Service {
         } else {
             return false;
         }
+    }
+
+    public Object createGame(CreateGameRequest gameRequest) throws ResponseException{
+//        if(dataAccess.isLoggedIn(gameRequest.authToken())) {
+            GameData gameData = new GameData(gameRequest.gameName());
+            return dataAccess.createGame(gameData);
+//        } else {
+//            throw new ResponseException(401, "Error: unauthorized");
+//        }
     }
 
 }
