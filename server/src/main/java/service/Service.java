@@ -3,6 +3,7 @@ package service;
 import dataAccess.DataAccess;
 import dataAccess.MemoryDataAccess;
 import exception.ResponseException;
+import model.AuthData;
 import model.User;
 
 public class Service {
@@ -35,8 +36,16 @@ public class Service {
             return dataAccess.loginUser(user);
         } else {
             throw new ResponseException(401, "Error: unauthorized");
-
         }
-
     }
+
+    public boolean logoutUser(String authToken) {
+        if (dataAccess.isLoggedIn(authToken)) {
+            dataAccess.logoutUser(authToken);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }

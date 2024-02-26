@@ -1,8 +1,11 @@
 package server;
 
+import com.google.gson.JsonSyntaxException;
 import exception.ResponseException;
+import model.AuthData;
 import responses.ClearResponse;
 import responses.ErrorResponse;
+import responses.LogoutResponse;
 import spark.*;
 import com.google.gson.Gson;
 import service.Service;
@@ -30,6 +33,8 @@ public class Server {
         Spark.delete("/db", this::clear);
         Spark.post("/user", this::registerUser);
         Spark.post("/session", this::loginUser);
+        Spark.delete("/session", this::logoutUser);
+
         Spark.exception(ResponseException.class, this::exceptionHandler);
 
 
@@ -75,6 +80,26 @@ public class Server {
             var user = new Gson().fromJson(req.body(), User.class);
             var response = service.loginUser(user);
             return new Gson().toJson(response);
+        } catch (ResponseException e){
+            res.status(e.StatusCode());
+            ErrorResponse response = new ErrorResponse(e.getMessage());
+            return new Gson().toJson(response);
+        }
+    }
+
+    private Object logoutUser(Request req, Response res) throws ResponseException {
+        try {
+            String authToken = req.headers("Authorization");
+            if(service.logoutUser(authToken)) {
+                LogoutResponse response = new LogoutResponse();
+                return new Gson().toJson(response);
+            } else {
+                throw new ResponseException(401, "Error: not logged in");
+            }
+        } catch (JsonSyntaxException e) {
+//            System.out.println(req.headers("Authorization"));
+            res.status(500);
+            return new Gson().toJson("your code is garbage");
         } catch (ResponseException e){
             res.status(e.StatusCode());
             ErrorResponse response = new ErrorResponse(e.getMessage());

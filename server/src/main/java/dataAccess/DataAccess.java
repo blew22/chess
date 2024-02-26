@@ -1,6 +1,7 @@
 package dataAccess;
 
 import exception.ResponseException;
+import model.AuthData;
 import model.User;
 
 public interface DataAccess {
@@ -12,5 +13,9 @@ public interface DataAccess {
     public boolean userExists(User user);
 
     public Object loginUser(User user);
+
+    public void logoutUser(String authToken);
+
+    public boolean isLoggedIn(String authToken);
 
 }
