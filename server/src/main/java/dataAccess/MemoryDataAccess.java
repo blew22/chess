@@ -60,8 +60,9 @@ public class MemoryDataAccess implements DataAccess {
     }
 
     public Object listGames(){
-        ArrayList<GameData> gameList = new ArrayList<>();
-        gameList.addAll(games.values());
+//        ArrayList<GameData> gameList = new ArrayList<>();
+        GameData[] gameList = games.values().toArray(new GameData[0]);
+//        gameList.addAll(games.values());
         return new ListGamesResponse(gameList);
     }
 
