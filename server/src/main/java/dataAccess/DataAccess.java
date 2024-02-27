@@ -4,6 +4,7 @@ import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
 import model.User;
+import requests.JoinGameRequest;
 
 public interface DataAccess {
 
@@ -20,5 +21,11 @@ public interface DataAccess {
     public boolean isLoggedIn(String authToken);
 
     public Object createGame(GameData game);
+
+    public Object listGames();
+
+    public Object joinGame(JoinGameRequest request) throws ResponseException;
+
+    public boolean gameExists(Integer gameID);
 
 }

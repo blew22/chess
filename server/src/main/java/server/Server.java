@@ -5,6 +5,7 @@ import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
 import requests.CreateGameRequest;
+import requests.JoinGameRequest;
 import responses.ClearResponse;
 import responses.CreateGameResponse;
 import responses.ErrorResponse;
@@ -38,6 +39,8 @@ public class Server {
         Spark.post("/session", this::loginUser);
         Spark.delete("/session", this::logoutUser);
         Spark.post("/game", this::createGame);
+        Spark.get("/game", this::listGames);
+        Spark.put("/game", this::joinGame);
 
         Spark.exception(ResponseException.class, this::exceptionHandler);
 
@@ -56,10 +59,17 @@ public class Server {
     }
 
     private Object clear(Request req, Response res) {
-        service.clear();
-        res.status(200);
-        ClearResponse response = new ClearResponse();
-        return new Gson().toJson(response);
+        try {
+            String authToken = req.headers("Authorization");
+            service.clear(authToken);
+            res.status(200);
+            ClearResponse response = new ClearResponse();
+            return new Gson().toJson(response);
+        } catch (ResponseException e) {
+            res.status(e.StatusCode());
+            ErrorResponse response = new ErrorResponse(e.getMessage());
+            return new Gson().toJson(response);
+        }
     }
 
     private Object registerUser(Request req, Response res) throws ResponseException { //what are req and res doing? do i need to build my own classes?
@@ -118,6 +128,32 @@ public class Server {
         try {
             var gameResponse = service.createGame(gameRequest);
             return new Gson().toJson(gameResponse);
+        } catch (ResponseException e) {
+            res.status(e.StatusCode());
+            ErrorResponse response = new ErrorResponse(e.getMessage());
+            return new Gson().toJson(response);
+        }
+    }
+
+    private Object listGames(Request req, Response res){
+        String authToken = req.headers("Authorization");
+        try {
+            var response = service.listGames(authToken);
+            return new Gson().toJson(response);
+        } catch (ResponseException e) {
+            res.status(e.StatusCode());
+            ErrorResponse response = new ErrorResponse(e.getMessage());
+            return new Gson().toJson(response);
+        }
+    }
+
+    private Object joinGame(Request req, Response res) {
+        JoinGameRequest joinRequest = new Gson().fromJson(req.body(), JoinGameRequest.class);
+        joinRequest = joinRequest.setAuthToken(req.headers("Authorization"));
+
+        try {
+            var joinResponse = service.joinGame(joinRequest);
+            return new Gson().toJson(joinResponse);
         } catch (ResponseException e) {
             res.status(e.StatusCode());
             ErrorResponse response = new ErrorResponse(e.getMessage());

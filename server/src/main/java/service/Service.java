@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessGame;
 import dataAccess.DataAccess;
 import dataAccess.MemoryDataAccess;
 import exception.ResponseException;
@@ -7,6 +8,9 @@ import model.AuthData;
 import model.GameData;
 import model.User;
 import requests.CreateGameRequest;
+import requests.JoinGameRequest;
+
+import java.lang.module.ResolutionException;
 
 public class Service {
 
@@ -15,23 +19,17 @@ public class Service {
     public Service() {
     }
 
-    public void clear() {
+    public void clear(String authToken) throws ResponseException {
         dataAccess.clear();
     }
 
     public Object registerUser(User user) throws ResponseException {
         if (dataAccess.userExists(user)) {
-//            ErrorResponse errorResponse = new ErrorResponse("already taken");
-//            return errorResponse;
             throw new ResponseException(403, "Error: already taken");
-            //error
         } else {
-            //create user, return auth
             return dataAccess.registerUser(user);
         }
     }
-
-    ;
 
     public Object loginUser(User user) throws ResponseException {
         if (dataAccess.userExists(user)) {
@@ -50,13 +48,30 @@ public class Service {
         }
     }
 
-    public Object createGame(CreateGameRequest gameRequest) throws ResponseException{
-        if(dataAccess.isLoggedIn(gameRequest.authToken())) {
-            GameData gameData = new GameData(gameRequest.gameName());
-            return dataAccess.createGame(gameData);
+    public Object createGame(CreateGameRequest gameRequest) throws ResponseException {
+        checkAuthorization(gameRequest.authToken());
+        GameData gameData = new GameData(gameRequest.gameName());
+        return dataAccess.createGame(gameData);
+    }
+
+    public Object listGames(String authToken) throws ResponseException {
+        checkAuthorization(authToken);
+        return dataAccess.listGames();
+
+    }
+
+    public Object joinGame(JoinGameRequest joinRequest) throws ResponseException {
+        checkAuthorization(joinRequest.authToken());
+        if (!dataAccess.gameExists(joinRequest.gameID())) {
+            throw new ResponseException(400, "Error: bad game");
         } else {
-            throw new ResponseException(401, "Error: unauthorized");
+            return dataAccess.joinGame(joinRequest);
         }
     }
 
+    private void checkAuthorization(String authToken) throws ResponseException {
+        if (!dataAccess.isLoggedIn(authToken)) {
+            throw new ResponseException(401, "Error: not authorized");
+        }
+    }
 }

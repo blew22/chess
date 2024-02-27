@@ -6,7 +6,10 @@ import java.util.HashMap;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
+import requests.JoinGameRequest;
 import responses.CreateGameResponse;
+import responses.JoinGameResponse;
+import responses.ListGamesResponse;
 import responses.RegisterResponse;
 import model.User;
 import chess.ChessGame;
@@ -22,6 +25,7 @@ public class MemoryDataAccess implements DataAccess {
     public void clear() {
         users.clear();
         games.clear();
+        authorizations.clear();
     }
 
     public Object registerUser(User user) {
@@ -54,4 +58,30 @@ public class MemoryDataAccess implements DataAccess {
         games.put(game.gameID(), game);
         return new CreateGameResponse(game.gameID());
     }
+
+    public Object listGames(){
+        ArrayList<GameData> gameList = new ArrayList<>();
+        gameList.addAll(games.values());
+        return new ListGamesResponse(gameList);
+    }
+
+    public Object joinGame(JoinGameRequest request) throws ResponseException{
+        GameData gameData = games.get(request.gameID());
+        if(request.playerColor() == ChessGame.TeamColor.WHITE && gameData.whiteUsername() == null){
+            games.replace(request.gameID(), gameData.setWhiteUsername(authorizations.get(request.authToken())));
+            return new JoinGameResponse();
+        } else if(request.playerColor() == ChessGame.TeamColor.BLACK && gameData.blackUsername() == null) {
+            games.replace(request.gameID(), gameData.setBlackUsername(authorizations.get(request.authToken())));
+            return new JoinGameResponse();
+        } else if(request.playerColor() == null){
+            return new JoinGameResponse();
+        } else {
+            throw new ResponseException(403, "Error: bad color");
+        }
+    }// need to actually change GameData in games HashMap
+
+    public boolean gameExists(Integer gameID){
+        return games.containsKey(gameID);
+    }
+
 }
