@@ -16,11 +16,11 @@ import chess.ChessGame;
 
 public class MemoryDataAccess implements DataAccess {
 
-    final private ArrayList<User> users = new ArrayList<User>();
+    final private ArrayList<User> users = new ArrayList<>();
 
     final private HashMap<String, String> authorizations = new HashMap<>();
 
-    final private HashMap<Integer, GameData> games = new HashMap<Integer, GameData>();
+    final private HashMap<Integer, GameData> games = new HashMap<>();
 
     public void clear() {
         users.clear();
@@ -29,9 +29,7 @@ public class MemoryDataAccess implements DataAccess {
     }
 
     public Object registerUser(User user) {
-//        User newUser = new User(user.username(), user.password(), user.email());
         users.add(user);
-//        AuthData newAuth = new AuthData(user.username());
         return loginUser(user);
     }
 
@@ -60,9 +58,7 @@ public class MemoryDataAccess implements DataAccess {
     }
 
     public Object listGames(){
-//        ArrayList<GameData> gameList = new ArrayList<>();
         GameData[] gameList = games.values().toArray(new GameData[0]);
-//        gameList.addAll(games.values());
         return new ListGamesResponse(gameList);
     }
 
@@ -79,10 +75,9 @@ public class MemoryDataAccess implements DataAccess {
         } else {
             throw new ResponseException(403, "Error: bad color");
         }
-    }// need to actually change GameData in games HashMap
+    }
 
     public boolean gameExists(Integer gameID){
         return games.containsKey(gameID);
     }
-
 }
