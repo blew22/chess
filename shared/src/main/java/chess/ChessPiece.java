@@ -263,8 +263,9 @@ public class ChessPiece {
     }
 
     private void lookUp(Collection<ChessMove> possibleMoves, ChessBoard board, ChessPosition myPosition) {
-        int currentRow = myPosition.getRow();
         int currentCol = myPosition.getColumn();
+        int currentRow = myPosition.getRow();
+
         for (int i = currentRow + 1; i <= 8; i++) {
             ChessPosition destination = new ChessPosition(i, currentCol);
             ChessMove move = new ChessMove(myPosition, destination, null);
