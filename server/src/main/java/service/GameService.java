@@ -16,7 +16,6 @@ public class GameService extends Service {
     public Object listGames(String authToken) throws ResponseException {
         checkAuthorization(authToken);
         return Service.gameDataAccess.listGames();
-
     }
 
     public Object joinGame(JoinGameRequest joinRequest) throws ResponseException {

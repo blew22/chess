@@ -17,6 +17,14 @@ public record GameData(int gameID, String whiteUsername, String blackUsername, S
         return new GameData(this.gameID, this.whiteUsername, username, this.gameName, this.chessGame);
     }
 
+    @Override
+    public String toString() {
+        return "GameData{" +
+                "whiteUsername='" + whiteUsername + '\'' +
+                ", blackUsername='" + blackUsername + '\'' +
+                ", gameName='" + gameName + '\'' +
+                '}';
+    }
 }
 
 class GameHelper {

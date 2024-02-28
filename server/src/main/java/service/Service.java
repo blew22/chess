@@ -19,7 +19,7 @@ public class Service {
         authDataAccess.clear();
     }
 
-    void checkAuthorization(String authToken) throws ResponseException {
+    public void checkAuthorization(String authToken) throws ResponseException {
         if (!authDataAccess.isLoggedIn(authToken)) {
             throw new ResponseException(401, "Error: not authorized");
         }

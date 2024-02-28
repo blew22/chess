@@ -2,4 +2,13 @@ package responses;
 
 import model.GameData;
 
-public record ListGamesResponse(GameData[] games) {}
+import java.util.Arrays;
+
+public record ListGamesResponse(GameData[] games) {
+    @Override
+    public String toString() {
+        return "ListGamesResponse{" +
+                "games=" + Arrays.toString(games) +
+                '}';
+    }
+}
