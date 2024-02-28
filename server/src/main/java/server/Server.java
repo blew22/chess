@@ -60,7 +60,7 @@ public class Server {
     }
 
     private void exceptionHandler(ResponseException ex, Request req, Response res) {
-        res.status(ex.StatusCode());
+        res.status(ex.statusCode());
     }
 
     private Object clear(Request req, Response res) {
@@ -71,7 +71,7 @@ public class Server {
             ClearResponse response = new ClearResponse();
             return new Gson().toJson(response);
         } catch (ResponseException e) {
-            res.status(e.StatusCode());
+            res.status(e.statusCode());
             ErrorResponse response = new ErrorResponse(e.getMessage());
             return new Gson().toJson(response);
         }
@@ -87,7 +87,7 @@ public class Server {
                 throw new ResponseException(400, "Error: bad request");
             }
         } catch (ResponseException e) {
-            res.status(e.StatusCode());
+            res.status(e.statusCode());
             ErrorResponse response = new ErrorResponse(e.getMessage());
             return new Gson().toJson(response);
         }
@@ -99,7 +99,7 @@ public class Server {
             var response = userService.loginUser(user);
             return new Gson().toJson(response);
         } catch (ResponseException e){
-            res.status(e.StatusCode());
+            res.status(e.statusCode());
             ErrorResponse response = new ErrorResponse(e.getMessage());
             return new Gson().toJson(response);
         }
@@ -118,7 +118,7 @@ public class Server {
             res.status(500);
             return new Gson().toJson("your code is garbage");
         } catch (ResponseException e){
-            res.status(e.StatusCode());
+            res.status(e.statusCode());
             ErrorResponse response = new ErrorResponse(e.getMessage());
             return new Gson().toJson(response);
         }
@@ -132,7 +132,7 @@ public class Server {
             var gameResponse = gameService.createGame(gameRequest);
             return new Gson().toJson(gameResponse);
         } catch (ResponseException e) {
-            res.status(e.StatusCode());
+            res.status(e.statusCode());
             ErrorResponse response = new ErrorResponse(e.getMessage());
             return new Gson().toJson(response);
         }
@@ -144,7 +144,7 @@ public class Server {
             var response = gameService.listGames(authToken);
             return new Gson().toJson(response);
         } catch (ResponseException e) {
-            res.status(e.StatusCode());
+            res.status(e.statusCode());
             ErrorResponse response = new ErrorResponse(e.getMessage());
             return new Gson().toJson(response);
         }
@@ -158,7 +158,7 @@ public class Server {
             var joinResponse = gameService.joinGame(joinRequest);
             return new Gson().toJson(joinResponse);
         } catch (ResponseException e) {
-            res.status(e.StatusCode());
+            res.status(e.statusCode());
             ErrorResponse response = new ErrorResponse(e.getMessage());
             return new Gson().toJson(response);
         }
