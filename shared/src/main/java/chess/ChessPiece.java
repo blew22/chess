@@ -229,16 +229,15 @@ public class ChessPiece {
         int currentRow = myPosition.getRow();
         for (int i = currentCol + 1; i <= 8; i++) {
             ChessPosition destination = new ChessPosition(currentRow, i);
+            ChessMove move = new ChessMove(myPosition, destination, null);
             if (board.getPiece(destination) != null &&
                     board.getPiece(destination).getTeamColor() == board.getPiece(myPosition).getTeamColor()) {
-                break;
+                break; //stops loop if it reaches teammate
             } else if (board.getPiece(destination) != null &&
                     board.getPiece(destination).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
-                ChessMove move = new ChessMove(myPosition, destination, null);
                 possibleMoves.add(move);
-                break;
+                break; //adds space when potentially capturing opponent, then stops loop
             }
-            ChessMove move = new ChessMove(myPosition, destination, null);
             possibleMoves.add(move);
         }
     }
@@ -268,16 +267,15 @@ public class ChessPiece {
         int currentCol = myPosition.getColumn();
         for (int i = currentRow + 1; i <= 8; i++) {
             ChessPosition destination = new ChessPosition(i, currentCol);
+            ChessMove move = new ChessMove(myPosition, destination, null);
             if (board.getPiece(destination) != null &&
                     board.getPiece(destination).getTeamColor() == board.getPiece(myPosition).getTeamColor()) {
                 break;
             } else if (board.getPiece(destination) != null &&
                     board.getPiece(destination).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
-                ChessMove move = new ChessMove(myPosition, destination, null);
                 possibleMoves.add(move);
                 break;
             }
-            ChessMove move = new ChessMove(myPosition, destination, null);
             possibleMoves.add(move);
         }
     }
@@ -385,7 +383,7 @@ public class ChessPiece {
         }
     }
 
-    private void addPromotionMoves(Collection<ChessMove> possibleMoves, ChessPosition myPosition, ChessPosition move){
+    private void addPromotionMoves(Collection<ChessMove> possibleMoves, ChessPosition myPosition, ChessPosition move) {
         possibleMoves.add(new ChessMove(myPosition, move, PieceType.QUEEN));
         possibleMoves.add(new ChessMove(myPosition, move, PieceType.KNIGHT));
         possibleMoves.add(new ChessMove(myPosition, move, PieceType.BISHOP));
