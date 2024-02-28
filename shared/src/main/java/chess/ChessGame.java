@@ -131,10 +131,6 @@ public class ChessGame {
         }
     }
 
-//    private void tryMove(ChessMove move, ChessBoard differentBoard) {
-//        moveHelper(move, differentBoard);
-//    }
-
     private TeamColor getOppositeTeamColor(TeamColor teamColor) {
         TeamColor opponentColor;
         if (teamColor == TeamColor.WHITE) {
