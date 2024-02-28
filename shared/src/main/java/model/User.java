@@ -16,4 +16,4 @@ public record User(String username, String password, String email){
         User user = (User) o;
         return Objects.equals(username, user.username) && Objects.equals(password, user.password);
     }
-};
+}
