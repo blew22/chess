@@ -1,22 +1,93 @@
 package dataAccess;
 
+import com.google.gson.Gson;
 import exception.ResponseException;
 import model.User;
 import java.sql.*;
 
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
+import static java.sql.Types.NULL;
+
 public class SQLUserDAO implements UserDataAccess {
-    @Override
-    public void clear() {
 
+    private static final AuthDataAccess authDataAccess;
+
+    static {
+        try {
+            authDataAccess = new SQLAuthDAO();
+        } catch (ResponseException | DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public SQLUserDAO() throws ResponseException, DataAccessException {
+        configureDatabase();
+    }
+    @Override
+    public void clear() throws ResponseException {
+        try(Connection conn = DatabaseManager.getConnection()) {
+            try (var statement = conn.prepareStatement("TRUNCATE users")) {
+                statement.executeUpdate();
+            }
+        } catch (SQLException | DataAccessException e) {
+            throw new ResponseException(500, e.getMessage());
+        }
     }
 
     @Override
-    public Object registerUser(User user) throws ResponseException {
-        return null;
+    public Object registerUser(User user) throws ResponseException{
+        String newUser = new Gson().toJson(user);
+        try (Connection conn = DatabaseManager.getConnection()){
+            try (var statement = conn.prepareStatement("INSERT INTO users (user) VALUES (?)")){
+                statement.setString(1, newUser);
+                statement.executeUpdate();
+                return loginUser(user);
+            }
+        } catch (SQLException | DataAccessException e) {
+            throw new ResponseException(500, e.getMessage());
+        }
     }
 
     @Override
-    public boolean userExists(User user) {
-        return false;
+    public boolean userExists(User user) throws ResponseException{
+        try(Connection conn = DatabaseManager.getConnection()) {
+            try (var statement = conn.prepareStatement("SELECT user FROM users WHERE username =?")) {
+                statement.setString(1, user.username());
+                try (var rs = statement.executeQuery()){
+                    return rs.next();
+                }
+            }
+        } catch (SQLException | DataAccessException e) {
+            throw new ResponseException(500, e.getMessage());
+        }
+
+    }
+
+    public Object loginUser(User user) throws ResponseException {
+        return authDataAccess.loginUser(user);
+    }
+
+    private final String[] createStatements = {
+            """
+            CREATE TABLE IF NOT EXISTS  users (
+              `username` varchar(256) NOT NULL,
+              `json` TEXT DEFAULT NULL,
+              PRIMARY KEY (`username`),
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            """
+    };
+
+
+    private void configureDatabase() throws ResponseException, DataAccessException {
+        DatabaseManager.createDatabase();
+        try (var conn = DatabaseManager.getConnection()) {
+            for (var statement : createStatements) {
+                try (var preparedStatement = conn.prepareStatement(statement)) {
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (SQLException ex) {
+            throw new ResponseException(500, String.format("Unable to configure database: %s", ex.getMessage()));
+        }
     }
 }

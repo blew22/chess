@@ -12,7 +12,7 @@ public class UserService extends Service{
     final static AuthDataAccess authDataAccess = new MemoryAuthDAO();
 
 
-    public Object registerUser(User user) throws ResponseException {
+    public Object registerUser(User user) throws ResponseException{
         if (userDataAccess.userExists(user)) { //allows duplicate usernames if password is different
             throw new ResponseException(403, "Error: already taken");
         } else {
@@ -20,7 +20,7 @@ public class UserService extends Service{
         }
     }
 
-    public Object loginUser(User user) throws ResponseException {
+    public Object loginUser(User user) throws ResponseException{
         if (userDataAccess.userExists(user)) {
             return authDataAccess.loginUser(user);
         } else {

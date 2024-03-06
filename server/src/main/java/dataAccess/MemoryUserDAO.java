@@ -1,5 +1,6 @@
 package dataAccess;
 
+import exception.ResponseException;
 import model.User;
 
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ public class MemoryUserDAO implements UserDataAccess {
         users.clear();
     }
 
-    public Object registerUser(User user) {
+    public Object registerUser(User user) throws ResponseException {
         users.add(user);
         return loginUser(user);
     }
@@ -23,7 +24,7 @@ public class MemoryUserDAO implements UserDataAccess {
         return users.contains(user);
     }
 
-    public Object loginUser(User user) {
+    public Object loginUser(User user) throws ResponseException {
         return authDataAccess.loginUser(user);
     }
 

@@ -13,7 +13,7 @@ public class Service {
     public Service() {
     }
 
-    public void clear(String authToken) throws ResponseException {
+    public void clear(String authToken) throws ResponseException{
         userDataAccess.clear();
         gameDataAccess.clear();
         authDataAccess.clear();

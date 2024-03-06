@@ -1,6 +1,7 @@
 package server;
 
 import com.google.gson.JsonSyntaxException;
+import dataAccess.DataAccessException;
 import exception.ResponseException;
 import requests.CreateGameRequest;
 import requests.JoinGameRequest;

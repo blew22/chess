@@ -5,9 +5,9 @@ import model.User;
 
 public interface UserDataAccess {
 
-    void clear();
+    void clear() throws ResponseException;
 
     Object registerUser(User user) throws ResponseException;
 
-    boolean userExists(User user);
+    boolean userExists(User user) throws ResponseException;
 }
