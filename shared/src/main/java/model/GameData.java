@@ -6,7 +6,7 @@ import java.util.Random;
 public record GameData(int gameID, String whiteUsername, String blackUsername, String gameName, ChessGame chessGame) {
 
     public GameData(String gameName) {
-        this(new GameHelper().createGameID(), null, null, gameName, new ChessGame());
+        this(new GameIDCreator().createGameID(), null, null, gameName, new ChessGame());
     }
 
     public GameData setWhiteUsername(String username){
@@ -27,7 +27,7 @@ public record GameData(int gameID, String whiteUsername, String blackUsername, S
     }
 }
 
-class GameHelper {
+class GameIDCreator {
 
     public int createGameID() {
         return new Random().nextInt(9000) + 1000;

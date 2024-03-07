@@ -6,9 +6,9 @@ import requests.JoinGameRequest;
 
 public interface GameDataAccess {
 
-    void clear();
+    void clear() throws ResponseException;
 
-    Object createGame(GameData game);
+    Object createGame(GameData game) throws ResponseException;
 
     Object listGames();
 

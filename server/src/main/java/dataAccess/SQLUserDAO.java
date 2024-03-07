@@ -59,9 +59,7 @@ public class SQLUserDAO implements UserDataAccess {
                 statement.setString(2, user.password());
                 try (var rs = statement.executeQuery()){
                     return rs.next();
-                }// when loggin in, checks if the user objects are the same but fails bc
-                // login request doesn't pass a user with an email. need to put password in the user db
-                // and check them both separately
+                }
             }
         } catch (SQLException | DataAccessException e) {
             throw new ResponseException(500, e.getMessage());

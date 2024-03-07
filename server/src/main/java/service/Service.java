@@ -12,7 +12,7 @@ public class Service {
     static {
         try {
             userDataAccess = new SQLUserDAO();
-            gameDataAccess = new MemoryGameDAO();
+            gameDataAccess = new SQLGameDAO();
             authDataAccess = new SQLAuthDAO();
 
         } catch (ResponseException | DataAccessException e) {
