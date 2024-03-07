@@ -28,7 +28,7 @@ public class UserService extends Service{
         }
     }
 
-    public boolean logoutUser(String authToken) {
+    public boolean logoutUser(String authToken) throws ResponseException {
         if (authDataAccess.isLoggedIn(authToken)) {
             authDataAccess.logout(authToken);
             return true;

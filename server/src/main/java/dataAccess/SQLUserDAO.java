@@ -23,6 +23,7 @@ public class SQLUserDAO implements UserDataAccess {
     public SQLUserDAO() throws ResponseException, DataAccessException {
         configureDatabase();
     }
+
     @Override
     public void clear() throws ResponseException {
         try(Connection conn = DatabaseManager.getConnection()) {
@@ -73,7 +74,7 @@ public class SQLUserDAO implements UserDataAccess {
               `username` varchar(256) NOT NULL,
               `json` TEXT DEFAULT NULL,
               PRIMARY KEY (`username`),
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            )
             """
     };
 

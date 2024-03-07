@@ -76,7 +76,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void logoutNonexistingUser() {
+    public void logoutNonexistingUser() throws ResponseException {
         assertFalse(userService.logoutUser(""));
     }
 

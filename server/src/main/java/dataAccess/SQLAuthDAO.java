@@ -8,7 +8,7 @@ import responses.LoginResponse;
 import javax.xml.crypto.Data;
 import java.sql.*;
 
-public class SQLAuthDAO implements AuthDataAccess{
+public class SQLAuthDAO implements AuthDataAccess {
 
     public SQLAuthDAO() throws ResponseException, DataAccessException {
         try {
@@ -20,8 +20,8 @@ public class SQLAuthDAO implements AuthDataAccess{
 
     @Override
     public void clear() throws ResponseException {
-        try(Connection conn = DatabaseManager.getConnection()){
-            try(var statement = conn.prepareStatement("TRUNCATE auths")){
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (var statement = conn.prepareStatement("TRUNCATE auths")) {
                 statement.executeUpdate();
             }
         } catch (SQLException | DataAccessException e) {
@@ -30,15 +30,28 @@ public class SQLAuthDAO implements AuthDataAccess{
     }
 
     @Override
-    public String getUsername(String authToken) {
-        return null;
+    public String getUsername(String authToken) throws ResponseException {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (var statement = conn.prepareStatement("SELECT username FROM users WHERE authToken = ? ")) {
+                statement.setString(1, "authToken");
+                try (ResultSet rs = statement.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getString("username");
+                    } else {
+                        throw new ResponseException(400, "user not found");
+                    }
+                }
+            }
+        } catch (SQLException | DataAccessException e) {
+            throw new ResponseException(500, e.getMessage());
+        }
     }
 
     @Override
     public Object loginUser(User user) throws ResponseException {
         AuthData authData = new AuthData(user.username());
-        try(Connection conn = DatabaseManager.getConnection()){
-            try(var statement = conn.prepareStatement("INSERT INTO auths (authToken, username) VALUES(?,?)")){
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (var statement = conn.prepareStatement("INSERT INTO auths (authToken, username) VALUES(?,?)")) {
                 statement.setString(1, authData.authToken());
                 statement.setString(2, user.username());
                 statement.executeUpdate();
@@ -50,13 +63,28 @@ public class SQLAuthDAO implements AuthDataAccess{
     }
 
     @Override
-    public boolean isLoggedIn(String authToken) {
-        return false;
+    public boolean isLoggedIn(String authToken) throws ResponseException {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (var statement = conn.prepareStatement("SELECT username FROM users WHERE authToken = ? ")) {
+                statement.setString(1, "authToken");
+                try (ResultSet rs = statement.executeQuery()) {
+                    return rs.next();
+                }
+            }
+        } catch (SQLException | DataAccessException e) {
+            throw new ResponseException(500, e.getMessage());
+        }
     }
 
     @Override
-    public void logout(String authToken) {
-
+    public void logout(String authToken) throws ResponseException {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (var statement = conn.prepareStatement("DELETE user FROM auths WHERE authToken = ?")) {
+                statement.setString(1, authToken);
+            }
+        } catch (SQLException | DataAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private final String[] createStatements = {
@@ -65,7 +93,7 @@ public class SQLAuthDAO implements AuthDataAccess{
               `authToken` varchar(99) NOT NULL,
               `username` TEXT DEFAULT NOT NULL,
               PRIMARY KEY (`authToken`),
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            )
             """
     };
 
