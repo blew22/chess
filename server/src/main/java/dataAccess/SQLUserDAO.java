@@ -39,9 +39,10 @@ public class SQLUserDAO implements UserDataAccess {
     public Object registerUser(User user) throws ResponseException{
         String newUser = new Gson().toJson(user);
         try (Connection conn = DatabaseManager.getConnection()){
-            try (var statement = conn.prepareStatement("INSERT INTO users (username, json) VALUES (?,?)")){
+            try (var statement = conn.prepareStatement("INSERT INTO users (username, password, json) VALUES (?,?,?)")){
                 statement.setString(1, user.username());
-                statement.setString(2, newUser);
+                statement.setString(2, user.password());
+                statement.setString(3, newUser);
                 statement.executeUpdate();
                 return loginUser(user);
             }
@@ -53,11 +54,14 @@ public class SQLUserDAO implements UserDataAccess {
     @Override
     public boolean userExists(User user) throws ResponseException{
         try(Connection conn = DatabaseManager.getConnection()) {
-            try (var statement = conn.prepareStatement("SELECT username FROM users WHERE username =?")) {
+            try (var statement = conn.prepareStatement("SELECT username FROM users WHERE username =? AND password=?")) {
                 statement.setString(1, user.username());
+                statement.setString(2, user.password());
                 try (var rs = statement.executeQuery()){
                     return rs.next();
-                }
+                }// when loggin in, checks if the user objects are the same but fails bc
+                // login request doesn't pass a user with an email. need to put password in the user db
+                // and check them both separately
             }
         } catch (SQLException | DataAccessException e) {
             throw new ResponseException(500, e.getMessage());
@@ -73,6 +77,7 @@ public class SQLUserDAO implements UserDataAccess {
             """
             CREATE TABLE IF NOT EXISTS  users (
               `username` varchar(256) NOT NULL,
+              `password` varchar(256) NOT NULL,
               `json` TEXT DEFAULT NULL,
               PRIMARY KEY (`username`)
             );
