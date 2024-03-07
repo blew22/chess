@@ -91,9 +91,9 @@ public class SQLAuthDAO implements AuthDataAccess {
             """
             CREATE TABLE IF NOT EXISTS  auths (
               `authToken` varchar(99) NOT NULL,
-              `username` TEXT DEFAULT NOT NULL,
-              PRIMARY KEY (`authToken`),
-            )
+              `username` TEXT NOT NULL,
+              PRIMARY KEY (`authToken`)
+            );
             """
     };
 

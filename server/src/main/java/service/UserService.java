@@ -7,9 +7,25 @@ import model.User;
 
 public class UserService extends Service{
 
-    final static UserDataAccess userDataAccess = new MemoryUserDAO();
+    final static UserDataAccess userDataAccess;
 
-    final static AuthDataAccess authDataAccess = new MemoryAuthDAO();
+    static {
+        try {
+            userDataAccess = new SQLUserDAO();
+        } catch (ResponseException | DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    final static AuthDataAccess authDataAccess;
+
+    static {
+        try {
+            authDataAccess = new SQLAuthDAO();
+        } catch (ResponseException | DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
     public Object registerUser(User user) throws ResponseException{

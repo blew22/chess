@@ -5,10 +5,22 @@ import exception.ResponseException;
 
 public class Service {
 
-    final static UserDataAccess userDataAccess = new MemoryUserDAO();
-    final static GameDataAccess gameDataAccess = new MemoryGameDAO();
+    final static UserDataAccess userDataAccess;
+    final static GameDataAccess gameDataAccess;
+    final static AuthDataAccess authDataAccess;
 
-    final static AuthDataAccess authDataAccess = new MemoryAuthDAO();
+    static {
+        try {
+            userDataAccess = new SQLUserDAO();
+            gameDataAccess = new MemoryGameDAO();
+            authDataAccess = new SQLAuthDAO();
+
+        } catch (ResponseException | DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
 
     public Service() {
     }

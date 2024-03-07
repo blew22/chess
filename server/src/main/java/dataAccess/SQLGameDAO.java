@@ -30,4 +30,29 @@ public class SQLGameDAO implements GameDataAccess{
     public boolean gameExists(Integer gameID) {
         return false;
     }
+
+    /*private final String[] createStatements = {
+            """
+            CREATE TABLE IF NOT EXISTS  games (
+              `gameID` int NOT NULL,
+              `json` TEXT DEFAULT NULL,
+              PRIMARY KEY (`gameID`)
+            );
+            """
+    };
+
+
+    private void configureDatabase() throws ResponseException, DataAccessException {
+        DatabaseManager.createDatabase();
+        try (var conn = DatabaseManager.getConnection()) {
+            for (var statement : createStatements) {
+                try (var preparedStatement = conn.prepareStatement(statement)) {
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (SQLException ex) {
+            throw new ResponseException(500, String.format("Unable to configure database: %s", ex.getMessage()));
+        }
+    }*/
+
 }
