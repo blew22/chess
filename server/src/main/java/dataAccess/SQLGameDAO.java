@@ -52,7 +52,7 @@ public class SQLGameDAO implements GameDataAccess{
                 return new CreateGameResponse(game.gameID());
             }
         } catch (SQLException | DataAccessException e) {
-            throw new RuntimeException(e);
+            throw new ResponseException(500, e.getMessage());
         }
     }
 
@@ -81,7 +81,6 @@ public class SQLGameDAO implements GameDataAccess{
             String whiteUsername;
             String blackUsername;
             GameData gameData;
-//update data json when joining
             try (var statement = conn.prepareStatement("SELECT whiteUsername, blackUsername, dataJson FROM games WHERE gameID =?")) {
                 statement.setInt(1, request.gameID());
                 try (var rs = statement.executeQuery()) {

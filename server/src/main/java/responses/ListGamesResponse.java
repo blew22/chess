@@ -11,4 +11,12 @@ public record ListGamesResponse(GameData[] games) {
                 "games=" + Arrays.toString(games) +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ListGamesResponse that = (ListGamesResponse) o;
+        return Arrays.equals(games, that.games);
+    }
 }

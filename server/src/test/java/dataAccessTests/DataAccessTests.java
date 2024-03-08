@@ -5,10 +5,12 @@ import dataAccess.*;
 import exception.ResponseException;
 import model.GameData;
 import model.User;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import requests.JoinGameRequest;
+import responses.ListGamesResponse;
 import responses.LoginResponse;
-
-import java.sql.Connection;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,7 +31,8 @@ public class DataAccessTests {
         testUser = new User("testUser", "drowssap", "em@il");
         userDataAccess.registerUser(testUser);
 
-        GameData testGame = new GameData(1, "testUser", null, "testGame", new ChessGame());
+        testGame = new GameData(1, "testUser", null, "testGame", new ChessGame());
+        gameDataAccess.createGame(testGame);
     }
 
     @AfterEach
@@ -115,7 +118,7 @@ public class DataAccessTests {
     }
 
     @Test
-    public void getUsernameBadAuth(){
+    public void getUsernameBadAuth() {
         assertThrows(ResponseException.class, () -> authDataAccess.getUsername("badAuth"));
     }
 
@@ -144,11 +147,95 @@ public class DataAccessTests {
     }
 
     @Test
-    public void listGamesSuccess(){
+    public void listGamesSuccess() {
+        GameData[] expectedList = new GameData[1];
+        expectedList[0] = testGame;
+        ListGamesResponse expected = new ListGamesResponse(expectedList);
 
+        ListGamesResponse result = (ListGamesResponse) gameDataAccess.listGames();
+        assertEquals(expected, result);
     }
 
+    @Test
+    public void listZeroGames() throws ResponseException {
+        GameData[] expectedList = new GameData[0];
+        ListGamesResponse expected = new ListGamesResponse(expectedList);
+        gameDataAccess.clear();
+        ListGamesResponse result = (ListGamesResponse) gameDataAccess.listGames();
+        assertEquals(expected, result);
+    }
 
+    @Test
+    public void gameClearTest() throws ResponseException {
+        gameDataAccess.createGame(new GameData("gameName"));
+        gameDataAccess.createGame(new GameData("gameName2"));
+        gameDataAccess.createGame(new GameData("gameName3"));
+        gameDataAccess.clear();
+        GameData[] expectedList = new GameData[0];
+        ListGamesResponse expected = new ListGamesResponse(expectedList);
 
+        ListGamesResponse result = (ListGamesResponse) gameDataAccess.listGames();
+        assertEquals(expected, result);
+    }
 
+    @Test
+    public void createGameSuccess() {
+        GameData[] expectedList = new GameData[1];
+        expectedList[0] = testGame;
+        ListGamesResponse expected = new ListGamesResponse(expectedList);
+
+        ListGamesResponse result = (ListGamesResponse) gameDataAccess.listGames();
+        assertEquals(expected, result);
+    }
+
+    @Test
+    public void createDuplicateGameDoesNotOverwrite() throws ResponseException {
+        GameData testGameDup = new GameData(2, "testUser", null, "testGame", new ChessGame());
+        gameDataAccess.createGame(testGameDup);
+
+        GameData[] expectedList = new GameData[2];
+        expectedList[0] = testGame;
+        expectedList[1] = testGameDup;
+
+        ListGamesResponse expected = new ListGamesResponse(expectedList);
+        ListGamesResponse result = (ListGamesResponse) gameDataAccess.listGames();
+        assertEquals(expected, result);
+    }
+
+    @Test
+    public void joinGameSuccess() throws ResponseException {
+        User newUser = new User("newUser", "pass", "em@il");
+        LoginResponse newResult = (LoginResponse) authDataAccess.loginUser(testUser);
+        String newAuthToken = newResult.authToken;
+
+        JoinGameRequest request = new JoinGameRequest(newAuthToken, ChessGame.TeamColor.BLACK, 1);
+        gameDataAccess.joinGame(request);
+
+        GameData[] expectedList = new GameData[1];
+        testGame = testGame.setBlackUsername("testUser");
+        expectedList[0] = testGame;
+        ListGamesResponse expected = new ListGamesResponse(expectedList);
+
+        ListGamesResponse result = (ListGamesResponse) gameDataAccess.listGames();
+        assertEquals(expected, result);
+    }
+
+    @Test
+    public void badColorJoinRequest() throws ResponseException {
+        LoginResponse newResult = (LoginResponse) authDataAccess.loginUser(testUser);
+        String newAuthToken = newResult.authToken;
+
+        JoinGameRequest request = new JoinGameRequest(newAuthToken, ChessGame.TeamColor.WHITE, 1);
+        assertThrows(ResponseException.class, () -> gameDataAccess.joinGame(request));
+    }
+
+    @Test
+    public void gameDoesExist(){
+        assertTrue(gameDataAccess.gameExists(1));
+    }
+
+    @Test
+    public void gameDoesNotExist(){
+        assertFalse(gameDataAccess.gameExists(5));
+    }
 }
