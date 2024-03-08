@@ -13,6 +13,6 @@ public interface AuthDataAccess {
 
     boolean isLoggedIn(String authToken) throws ResponseException;
 
-    void logout(String authToken);
+    void logout(String authToken) throws ResponseException;
 
 }

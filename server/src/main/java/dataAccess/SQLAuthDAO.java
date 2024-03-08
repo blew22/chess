@@ -75,14 +75,14 @@ public class SQLAuthDAO implements AuthDataAccess {
     }
 
     @Override
-    public void logout(String authToken){
+    public void logout(String authToken) throws ResponseException {
         try (Connection conn = DatabaseManager.getConnection()) {
             try (var statement = conn.prepareStatement("DELETE FROM auths WHERE authToken = ?")) {
                 statement.setString(1, authToken);
                 statement.executeUpdate();
             }
         } catch (SQLException | DataAccessException e) {
-            throw new RuntimeException(e);
+            throw new ResponseException(500, e.getMessage());
         }
     }
 

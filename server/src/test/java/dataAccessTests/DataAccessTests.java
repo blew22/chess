@@ -1,7 +1,9 @@
 package dataAccessTests;
 
+import chess.ChessGame;
 import dataAccess.*;
 import exception.ResponseException;
+import model.GameData;
 import model.User;
 import org.junit.jupiter.api.*;
 import responses.LoginResponse;
@@ -16,16 +18,18 @@ public class DataAccessTests {
     private static UserDataAccess userDataAccess;
     private static GameDataAccess gameDataAccess;
     private static User testUser;
-    private static Connection conn;
+    private static GameData testGame;
 
     @BeforeEach
     public void setup() throws ResponseException, DataAccessException {
         authDataAccess = new SQLAuthDAO();
         userDataAccess = new SQLUserDAO();
         gameDataAccess = new SQLGameDAO();
+
         testUser = new User("testUser", "drowssap", "em@il");
         userDataAccess.registerUser(testUser);
-        conn = DatabaseManager.getConnection();
+
+        GameData testGame = new GameData(1, "testUser", null, "testGame", new ChessGame());
     }
 
     @AfterEach
@@ -89,6 +93,59 @@ public class DataAccessTests {
         String authToken = result.authToken;
         authDataAccess.logout(authToken);
         assertFalse(authDataAccess.isLoggedIn(authToken));
+    }
+
+    @Test
+    public void authsClear() throws ResponseException {
+        LoginResponse result = (LoginResponse) authDataAccess.loginUser(testUser);
+        String testAuthToken = result.authToken;
+        User newUser = new User("newUser", "pass", "em@il");
+        LoginResponse newResult = (LoginResponse) authDataAccess.loginUser(testUser);
+        String newAuthToken = newResult.authToken;
+        authDataAccess.clear();
+        assertFalse(authDataAccess.isLoggedIn(testAuthToken));
+        assertFalse(authDataAccess.isLoggedIn(newAuthToken));
+    }
+
+    @Test
+    public void getUserNameSuccess() throws ResponseException {
+        LoginResponse result = (LoginResponse) authDataAccess.loginUser(testUser);
+        String testAuthToken = result.authToken;
+        assertEquals("testUser", authDataAccess.getUsername(testAuthToken));
+    }
+
+    @Test
+    public void getUsernameBadAuth(){
+        assertThrows(ResponseException.class, () -> authDataAccess.getUsername("badAuth"));
+    }
+
+    @Test
+    public void logoutSuccess() throws ResponseException {
+        LoginResponse result = (LoginResponse) authDataAccess.loginUser(testUser);
+        String testAuthToken = result.authToken;
+        assertTrue(authDataAccess.isLoggedIn(testAuthToken));
+        authDataAccess.logout(testAuthToken);
+        assertFalse(authDataAccess.isLoggedIn(testAuthToken));
+    }
+
+    @Test
+    public void logoutDoesNotAffectOtherUsers() throws ResponseException {
+        LoginResponse result = (LoginResponse) authDataAccess.loginUser(testUser);
+        String testAuthToken = result.authToken;
+
+        User newUser = new User("newUser", "pass", "em@il");
+        LoginResponse newResult = (LoginResponse) authDataAccess.loginUser(testUser);
+        String newAuthToken = newResult.authToken;
+
+        assertTrue(authDataAccess.isLoggedIn(testAuthToken));
+        authDataAccess.logout(testAuthToken);
+        assertFalse(authDataAccess.isLoggedIn(testAuthToken));
+        assertTrue(authDataAccess.isLoggedIn(newAuthToken));
+    }
+
+    @Test
+    public void listGamesSuccess(){
+
     }
 
 
