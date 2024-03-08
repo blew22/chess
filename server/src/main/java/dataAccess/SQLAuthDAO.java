@@ -32,8 +32,8 @@ public class SQLAuthDAO implements AuthDataAccess {
     @Override
     public String getUsername(String authToken) throws ResponseException {
         try (Connection conn = DatabaseManager.getConnection()) {
-            try (var statement = conn.prepareStatement("SELECT username FROM users WHERE authToken = ? ")) {
-                statement.setString(1, "authToken");
+            try (var statement = conn.prepareStatement("SELECT username FROM auths WHERE authToken = ? ")) {
+                statement.setString(1, authToken);
                 try (ResultSet rs = statement.executeQuery()) {
                     if (rs.next()) {
                         return rs.getString("username");

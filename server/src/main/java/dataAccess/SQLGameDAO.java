@@ -16,13 +16,18 @@ import java.util.List;
 
 public class SQLGameDAO implements GameDataAccess{
 
+    static AuthDataAccess authDataAccess = null;
+
     public SQLGameDAO() throws ResponseException {
         try{
             configureDatabase();
+            authDataAccess = new SQLAuthDAO();
         } catch (ResponseException | DataAccessException e) {
             throw new ResponseException(500, e.getMessage());
         }
     }
+
+
     @Override
     public void clear() throws ResponseException {
         try(Connection conn = DatabaseManager.getConnection()) {
@@ -89,10 +94,11 @@ public class SQLGameDAO implements GameDataAccess{
                     }
                 }
             }
+            String username = authDataAccess.getUsername(request.authToken());
 
             if (request.playerColor() == ChessGame.TeamColor.WHITE && whiteUsername == null) {
                 try(var statement = conn.prepareStatement("UPDATE games SET whiteUsername = ? WHERE gameID=?")){
-                    statement.setString(1, whiteUsername);
+                    statement.setString(1, username);
                     statement.setInt(2, request.gameID());
                     statement.executeUpdate();
                 }
@@ -100,7 +106,7 @@ public class SQLGameDAO implements GameDataAccess{
 
             } else if (request.playerColor() == ChessGame.TeamColor.BLACK && blackUsername == null) {
                 try(var statement = conn.prepareStatement("UPDATE games SET blackUsername = ? WHERE gameID=?")){
-                    statement.setString(1, blackUsername);
+                    statement.setString(1, username);
                     statement.setInt(2, request.gameID());
                     statement.executeUpdate();
                 }
