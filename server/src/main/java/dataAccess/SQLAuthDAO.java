@@ -4,8 +4,6 @@ import exception.ResponseException;
 import model.AuthData;
 import model.User;
 import responses.LoginResponse;
-
-import javax.xml.crypto.Data;
 import java.sql.*;
 
 public class SQLAuthDAO implements AuthDataAccess {
@@ -77,7 +75,7 @@ public class SQLAuthDAO implements AuthDataAccess {
     }
 
     @Override
-    public void logout(String authToken) throws ResponseException {
+    public void logout(String authToken){
         try (Connection conn = DatabaseManager.getConnection()) {
             try (var statement = conn.prepareStatement("DELETE FROM auths WHERE authToken = ?")) {
                 statement.setString(1, authToken);

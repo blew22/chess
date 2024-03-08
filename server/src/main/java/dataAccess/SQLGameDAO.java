@@ -9,7 +9,6 @@ import responses.CreateGameResponse;
 import responses.JoinGameResponse;
 import responses.ListGamesResponse;
 
-import javax.xml.crypto.Data;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +61,6 @@ public class SQLGameDAO implements GameDataAccess{
         try(Connection conn = DatabaseManager.getConnection()){
             try(var statement = conn.prepareStatement("SELECT dataJson FROM games")){
                 try(var rs = statement.executeQuery()){
-                    int numGames = rs.getFetchSize();
                     List<GameData> games = new ArrayList<>();
                     while (rs.next()) {
                         String dataJson = rs.getString("dataJson");

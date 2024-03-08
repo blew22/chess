@@ -1,3 +1,4 @@
+/*
 package dataAccess;
 
 import model.AuthData;
@@ -32,3 +33,4 @@ public class MemoryAuthDAO implements AuthDataAccess{
         return authorizations.containsKey(authToken);
     }
 }
+*/
