@@ -10,4 +10,5 @@ public interface UserDataAccess {
     Object registerUser(User user) throws ResponseException;
 
     boolean userExists(User user) throws ResponseException;
+
 }

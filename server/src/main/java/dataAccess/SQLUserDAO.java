@@ -49,7 +49,7 @@ public class SQLUserDAO implements UserDataAccess {
     }
 
     @Override
-    public boolean userExists(User user) throws ResponseException{
+    public boolean userExists(User user) throws ResponseException {
         try(Connection conn = DatabaseManager.getConnection()) {
             try (var statement = conn.prepareStatement("SELECT username FROM users WHERE username =? AND password=?")) {
                 statement.setString(1, user.username());
@@ -61,10 +61,9 @@ public class SQLUserDAO implements UserDataAccess {
         } catch (SQLException | DataAccessException e) {
             throw new ResponseException(500, e.getMessage());
         }
-
     }
 
-    public Object loginUser(User user) throws ResponseException {
+    private Object loginUser(User user) throws ResponseException {
         return authDataAccess.loginUser(user);
     }
 
