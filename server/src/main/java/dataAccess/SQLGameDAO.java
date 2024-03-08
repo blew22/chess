@@ -82,13 +82,15 @@ public class SQLGameDAO implements GameDataAccess{
         try(Connection conn = DatabaseManager.getConnection()) {
             String whiteUsername;
             String blackUsername;
-
-            try (var statement = conn.prepareStatement("SELECT whiteUsername, blackUsername FROM games WHERE gameID =?")) {
+            GameData gameData;
+//update data json when joining
+            try (var statement = conn.prepareStatement("SELECT whiteUsername, blackUsername, dataJson FROM games WHERE gameID =?")) {
                 statement.setInt(1, request.gameID());
                 try (var rs = statement.executeQuery()) {
                     if (rs.next()) {
                         whiteUsername = rs.getString("whiteUsername");
                         blackUsername = rs.getString("blackUsername");
+                        gameData = new Gson().fromJson(rs.getString("dataJson"), GameData.class);
                     } else {
                         throw new DataAccessException("game not found");
                     }
@@ -97,17 +99,22 @@ public class SQLGameDAO implements GameDataAccess{
             String username = authDataAccess.getUsername(request.authToken());
 
             if (request.playerColor() == ChessGame.TeamColor.WHITE && whiteUsername == null) {
-                try(var statement = conn.prepareStatement("UPDATE games SET whiteUsername = ? WHERE gameID=?")){
+                gameData = gameData.setWhiteUsername(username);
+                try(var statement = conn.prepareStatement("UPDATE games SET whiteUsername = ?, dataJson = ? WHERE gameID=?")){
                     statement.setString(1, username);
-                    statement.setInt(2, request.gameID());
+                    statement.setString(2, new Gson().toJson(gameData));
+                    statement.setInt(3, request.gameID());
                     statement.executeUpdate();
                 }
+
                 return new JoinGameResponse();
 
             } else if (request.playerColor() == ChessGame.TeamColor.BLACK && blackUsername == null) {
-                try(var statement = conn.prepareStatement("UPDATE games SET blackUsername = ? WHERE gameID=?")){
+                gameData = gameData.setBlackUsername(username);
+                try(var statement = conn.prepareStatement("UPDATE games SET blackUsername = ?, dataJson = ? WHERE gameID=?")){
                     statement.setString(1, username);
-                    statement.setInt(2, request.gameID());
+                    statement.setString(2, new Gson().toJson(gameData));
+                    statement.setInt(3, request.gameID());
                     statement.executeUpdate();
                 }
                 return new JoinGameResponse();
