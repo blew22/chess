@@ -15,7 +15,11 @@ public class ChessBoard {
     private ChessPiece[][] squares = new ChessPiece[9][9];
 
     public ChessBoard() {
+        resetBoard();
+    }
 
+    public ChessPiece[][] getBoard() {
+        return squares;
     }
 
     public ChessPosition findPiece(ChessPiece.PieceType type, ChessGame.TeamColor team) {
@@ -36,7 +40,6 @@ public class ChessBoard {
         Map<ChessPosition, ChessPiece> teamPieces = new HashMap<>();
         for (int r = 1; r <= 8; r++) {
             for (int c = 1; c <= 8; c++) {
-//                ChessPosition position = new ChessPosition(r, c);
                 if (squares[r][c] != null && squares[r][c].getTeamColor() == team) {
                     teamPieces.put(new ChessPosition(r, c), squares[r][c]);
                 }
@@ -96,7 +99,6 @@ public class ChessBoard {
      */
     public void resetBoard() {
         //new chess board is a 2d array of pieces
-//        ChessPiece[][] newBoard = new ChessPiece[9][9];
 
         //add all white pieces
         this.addPiece(new ChessPosition(1, 1), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
