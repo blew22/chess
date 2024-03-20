@@ -50,7 +50,7 @@ public class BoardPrinter {
         out.print(EMPTY + " A  B  C  D  E  F  G  H " + EMPTY);
         out.print(advanceLine(out));
         out.print(chessBoard);
-    }
+    }//ljh vj c
 
     private static void setEdgeFormat(PrintStream out){
         out.print(edgeBGColor + edgeTextColor);
