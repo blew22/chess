@@ -44,7 +44,7 @@ public class Main {
 
 
         /*chess.ChessPiece[][] board = new ChessBoard().getBoard();
-        BoardPrinter.printUI(board);*/
+        BoardPrinter.printUI(board);*///
 
     }
 
