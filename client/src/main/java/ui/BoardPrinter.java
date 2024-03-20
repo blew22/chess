@@ -1,32 +1,51 @@
 package ui;
 
-import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Random;
 
 import static ui.EscapeSequences.*;
 
 public class BoardPrinter {
 
-    private static final String edgeBGColor = SET_BG_COLOR_LIGHT_GREY;
+    private static final String edgeBGColor = SET_BG_COLOR_BLUE;
     private static final String edgeTextColor = SET_TEXT_COLOR_BLACK;
     private static final String abyssColor = SET_BG_COLOR_WHITE;
+    private static final String lightSquareBGColor = SET_BG_COLOR_WHITE;
+    private static final String lightSquareTextColor = SET_TEXT_COLOR_BLACK;
+    private static final String darkSquareBGColor = SET_BG_COLOR_LIGHT_GREY;
+    private static final String darkSquareTextColor = SET_TEXT_COLOR_WHITE;
+    private static final String newLine = abyssColor + "\n";
+
 
     public static void printUI(chess.ChessPiece[][] board) {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         out.print(ERASE_SCREEN);
 
+        String whiteBoard = whiteBoardToString(board);
+        String blackBoard = blackBoardToString(board);
+
+        drawWhiteChessBoard(out, whiteBoard);
+        out.print(newLine);
+        drawBlackChessBoard(out, blackBoard);
+
+
+    }
+
+    private static String whiteBoardToString(ChessPiece[][] board) {
         StringBuilder chessBoard = new StringBuilder();
-        for(int r = 8; r > 0 ; r--){
+        for (int r = 8; r > 0; r--) {
             chessBoard.append(edgeBGColor + edgeTextColor);
-            chessBoard.append(EMPTY);
-            chessBoard.append(SET_BG_COLOR_RED);
-            for(int c = 1; c <= 8; c++){
-                if(board[r][c] == null){
+            chessBoard.append("\u2003" + r + " ");
+            for (int c = 1; c <= 8; c++) {
+                if ((isEven(r) && isEven(c)) || (!isEven(r) && !isEven(c))) {
+                    chessBoard.append(darkSquareBGColor);
+                } else {
+                    chessBoard.append(lightSquareBGColor);
+                }
+                if (board[r][c] == null) {
                     chessBoard.append(EMPTY);
                 } else {
                     ChessPiece.PieceType type = board[r][c].getPieceType();
@@ -35,29 +54,64 @@ public class BoardPrinter {
                 }
             }
             chessBoard.append(edgeBGColor + edgeTextColor);
-            chessBoard.append(EMPTY);
-            chessBoard.append(advanceLine(out));
+            chessBoard.append(" " + r + "\u2003");
+            chessBoard.append(newLine);
         }
-
-
-        drawChessBoard(out, chessBoard.toString());
-
-
+        return chessBoard.toString();
     }
 
-    private static void drawChessBoard(PrintStream out, String chessBoard){
+    private static String blackBoardToString(ChessPiece[][] board) {
+        StringBuilder chessBoard = new StringBuilder();
+        for (int r = 1; r <= 8; r++) {
+            chessBoard.append(edgeBGColor + edgeTextColor);
+            chessBoard.append("\u2003" + r + " ");
+            for (int c = 8; c >= 1; c--) {
+                if ((isEven(r) && isEven(c)) || (!isEven(r) && !isEven(c))) {
+                    chessBoard.append(darkSquareBGColor);
+                } else {
+                    chessBoard.append(lightSquareBGColor);
+                }
+                if (board[r][c] == null) {
+                    chessBoard.append(EMPTY);
+                } else {
+                    ChessPiece.PieceType type = board[r][c].getPieceType();
+                    ChessGame.TeamColor color = board[r][c].getTeamColor();
+                    chessBoard.append(printPiece(type, color));
+                }
+            }
+            chessBoard.append(edgeBGColor + edgeTextColor);
+            chessBoard.append(" " + r + "\u2003");
+            chessBoard.append(newLine);
+        }
+        return chessBoard.toString();
+    }
+
+    private static void drawWhiteChessBoard(PrintStream out, String chessBoard){
         setEdgeFormat(out);
-        out.print(EMPTY + " A  B  C  D  E  F  G  H " + EMPTY);
-        out.print(advanceLine(out));
+        out.print(EMPTY + "\u2003A \u2003B \u2003C \u2003D \u2003E \u2003F \u2003G \u2003H " + EMPTY);
+        out.print(newLine);
         out.print(chessBoard);
-    }//ljh vj c
+        setEdgeFormat(out);
+        out.print(EMPTY + "\u2003A \u2003B \u2003C \u2003D \u2003E \u2003F \u2003G \u2003H " + EMPTY);
+        out.print(newLine);
+    }
+
+    private static void drawBlackChessBoard(PrintStream out, String chessBoard){
+        setEdgeFormat(out);
+        out.print(EMPTY + "\u2003H \u2003G \u2003F \u2003E \u2003D \u2003C \u2003B \u2003A " + EMPTY);
+        out.print(newLine);
+        out.print(chessBoard);
+        setEdgeFormat(out);
+        out.print(EMPTY + "\u2003H \u2003G \u2003F \u2003E \u2003D \u2003C \u2003B \u2003A " + EMPTY);
+        out.print(newLine);
+    }
 
     private static void setEdgeFormat(PrintStream out){
         out.print(edgeBGColor + edgeTextColor);
     }
-    private static String advanceLine(PrintStream out){
-        return abyssColor + "\n";
-    }
+//    private static String advanceLine(PrintStream out){
+//        return abyssColor + "\n";
+//    }
 
     private static String printPiece(ChessPiece.PieceType type, ChessGame.TeamColor color){
         if(color == ChessGame.TeamColor.BLACK){
@@ -95,6 +149,10 @@ public class BoardPrinter {
                     return " X ";
             }
         }
+    }
+
+    private static boolean isEven(int x){
+        return (x%2) == 0;
     }
 
 
