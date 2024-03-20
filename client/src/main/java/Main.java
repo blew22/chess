@@ -35,6 +35,17 @@ public class Main {
                     
                     -->\t""";
 
+    private static final String postHelpMenu =
+            SET_TEXT_BOLD + "Help Menu:" + RESET_TEXT_BOLD_FAINT + "\n" + """
+                    \t1. Help -- displays this information
+                    \t2. Logout -- logs out current user
+                    \t3. Create Game -- name and create a new chess game
+                    \t4. List Games -- list all existing chess games
+                    \t5. Join Game -- join an existing game as either white or black player
+                    \t6. Join Observer -- join an existing game as a bystander
+                    
+                    -->\t""";
+
 
     public static void main(String[] args) {
         //var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
@@ -86,7 +97,6 @@ public class Main {
                 break;
             case "4":
             case "help":
-
                 System.out.print(preHelpMenu);
                 preLoginMenu();
                 break;
@@ -99,11 +109,49 @@ public class Main {
 
     private static void postLoginMenu(){
         String input;
+        String gameName;
         input = scanner.nextLine().toLowerCase();
         switch(input){
             case"1":
             case"help":
-
+                System.out.print(postHelpMenu);
+                postLoginMenu();
+                break;
+            case"2":
+            case"logout":
+                System.out.println("Logging out...\n");
+                System.out.print(preLoginMenu);
+                preLoginMenu();
+                break;
+            case"3":
+            case"create game":
+                System.out.print("Enter a name of the new game: ");
+                gameName = scanner.nextLine();
+                System.out.println("New game, " + gameName + " created with gameID xxxx.\n");
+                System.out.print(postLoginMenu);
+                postLoginMenu();
+                break;
+            case"4":
+            case"list games":
+                System.out.print(SET_TEXT_BOLD + "Existing games: " + RESET_TEXT_BOLD_FAINT + "\n");
+                System.out.print("""
+                        \t1. game1
+                        \t2. game2
+                        \t3. game3
+                        """);
+                System.out.print(postLoginMenu);
+                postLoginMenu();
+                break;
+            case"5":
+            case"join game":
+                //join game
+            case"6":
+            case"join observer":
+                //join observer
+            default:
+                System.out.print("invalid input.\ntry again.");
+                System.out.print(postLoginMenu);
+                postLoginMenu();
         }
     }
 }
