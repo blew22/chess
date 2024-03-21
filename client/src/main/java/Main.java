@@ -1,3 +1,6 @@
+import chess.ChessBoard;
+import ui.BoardPrinter;
+
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
@@ -5,6 +8,9 @@ import static ui.EscapeSequences.*;
 public class Main {
 
     private static final Scanner scanner = new Scanner(System.in);
+
+    static chess.ChessPiece[][] board = new ChessBoard().getBoard();
+
     private static final String preLoginMenu =
             SET_TEXT_BOLD + "Let's get started:" + RESET_TEXT_BOLD_FAINT + "\n" + """
                     \t1. Register
@@ -48,14 +54,15 @@ public class Main {
 
 
     public static void main(String[] args) {
-        //var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
+        //System.out.print(SET_BG_COLOR_WHITE);
         System.out.println("♕ 240 Chess Client ♕\n");
+        //System.out.print("\u001b[15m");
+
         System.out.print(preLoginMenu);
         preLoginMenu();
 
 
-        /*chess.ChessPiece[][] board = new ChessBoard().getBoard();
-        BoardPrinter.printUI(board);*///
+
 
     }
 
@@ -110,6 +117,8 @@ public class Main {
     private static void postLoginMenu(){
         String input;
         String gameName;
+        String teamColor;
+        int gameID;
         input = scanner.nextLine().toLowerCase();
         switch(input){
             case"1":
@@ -144,10 +153,26 @@ public class Main {
                 break;
             case"5":
             case"join game":
-                //join game
+                System.out.print("Enter a game ID number: ");
+                gameID = scanner.nextInt();
+                scanner.nextLine();
+                System.out.print("White or Black?\n");
+                teamColor = scanner.nextLine();
+                System.out.print("Joining game " + gameID + " as " + teamColor + ".\n");
+                BoardPrinter.printUI(board);
+                System.out.print("\n" + postLoginMenu);
+                postLoginMenu();
+                break;
             case"6":
             case"join observer":
-                //join observer
+                System.out.print("Enter a game ID number: ");
+                gameID = scanner.nextInt();
+                scanner.nextLine();
+                System.out.print("Joining game " + gameID + ".");
+                BoardPrinter.printUI(board);
+                System.out.print("\n" + postLoginMenu);
+                postLoginMenu();
+                break;
             default:
                 System.out.print("invalid input.\ntry again.");
                 System.out.print(postLoginMenu);

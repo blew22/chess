@@ -30,6 +30,7 @@ public class BoardPrinter {
         drawWhiteChessBoard(out, whiteBoard);
         out.print(newLine);
         drawBlackChessBoard(out, blackBoard);
+        out.print("\u001b[15m");
 
 
     }
