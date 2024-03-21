@@ -12,7 +12,7 @@ public class BoardPrinter {
 
     private static final String edgeBGColor = SET_BG_COLOR_BLUE;
     private static final String edgeTextColor = SET_TEXT_COLOR_BLACK;
-    private static final String abyssColor = SET_BG_COLOR_WHITE;
+    private static final String abyssColor = "\u001B[49m";
     private static final String lightSquareBGColor = SET_BG_COLOR_WHITE;
     private static final String lightSquareTextColor = SET_TEXT_COLOR_BLACK;
     private static final String darkSquareBGColor = SET_BG_COLOR_LIGHT_GREY;
@@ -30,7 +30,7 @@ public class BoardPrinter {
         drawWhiteChessBoard(out, whiteBoard);
         out.print(newLine);
         drawBlackChessBoard(out, blackBoard);
-        out.print("\u001b[15m");
+        out.print(newLine);
 
 
     }
