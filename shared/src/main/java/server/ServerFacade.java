@@ -3,9 +3,11 @@ package server;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import model.AuthData;
+import model.GameData;
 import model.User;
 import requests.CreateGameRequest;
 import responses.CreateGameResponse;
+import responses.ListGamesResponse;
 import responses.LoginResponse;
 import responses.RegisterResponse;
 
@@ -40,6 +42,12 @@ public class ServerFacade {
         var path = "/game";
         CreateGameRequest createGameRequest = new CreateGameRequest(gameName, auth);
         return this.makeRequest("POST", path, createGameRequest, CreateGameResponse.class, auth);
+    }
+
+    public ListGamesResponse listGames(String auth) throws ResponseException {
+        var path = "/game";
+
+        return this.makeRequest("GET", path, null, ListGamesResponse.class, auth);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String auth) throws ResponseException {

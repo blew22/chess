@@ -3,14 +3,15 @@ package ui;
 import chess.ChessBoard;
 import chess.ChessPiece;
 import exception.ResponseException;
+import model.GameData;
 import requests.CreateGameRequest;
 import responses.CreateGameResponse;
+import responses.ListGamesResponse;
 import server.ServerFacade;
 
 import java.util.Scanner;
 
-import static ui.EscapeSequences.RESET_TEXT_BOLD_FAINT;
-import static ui.EscapeSequences.SET_TEXT_BOLD;
+import static ui.EscapeSequences.*;
 
 public class PostLoginMenu {
 
@@ -88,12 +89,20 @@ public class PostLoginMenu {
 
             case "4":
             case "list games":
-                System.out.print(SET_TEXT_BOLD + "Existing games: " + RESET_TEXT_BOLD_FAINT + "\n");
-                System.out.print("""
-                        \t1. game1
-                        \t2. game2
-                        \t3. game3
-                        """);
+                try{
+                    ListGamesResponse response = (ListGamesResponse) server.listGames(auth);
+                    var games = response.games();
+                    System.out.print(SET_TEXT_BOLD + "Existing games: " + RESET_TEXT_BOLD_FAINT + "\n");
+                    System.out.println("\t" + SET_TEXT_UNDERLINE+ "ID\t\tGame Name" + RESET_TEXT_UNDERLINE);
+                    for (GameData game : games){
+                        System.out.println("\t" + game.gameID() + "\t" + game.gameName());
+                    }
+                    System.out.print("\n");
+                } catch(ResponseException e){
+                    System.out.println(e.getMessage());
+                    break;
+                }
+
                 run(username, auth);
                 break;
             case "5":
