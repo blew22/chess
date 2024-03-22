@@ -15,7 +15,10 @@ import java.util.Objects;
 
 public class ServerFacade {
 
-    public ServerFacade() {
+    private String serverUrl;
+
+
+    public ServerFacade(String url) {serverUrl = url;
     }
 
     public LoginResponse login(String username, String password) throws ResponseException {
@@ -67,7 +70,6 @@ public class ServerFacade {
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String auth) throws ResponseException {
         try {
-            String serverUrl = "http://localhost:8080";
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);

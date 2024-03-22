@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ServerFacadeTests {
 
     private static Server server;
-    private static final ServerFacade serverFacade = new ServerFacade();
+    private static ServerFacade serverFacade;
     private static String testUserAuth;
     private static AuthDataAccess authDataAccess;
     private static UserDataAccess userDataAccess;
@@ -29,7 +29,7 @@ public class ServerFacadeTests {
         server = new Server();
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
-
+        serverFacade = new ServerFacade("http://localhost:" + port);
         try {
             authDataAccess = new SQLAuthDAO();
             userDataAccess = new SQLUserDAO();
@@ -38,6 +38,7 @@ public class ServerFacadeTests {
             userDataAccess.clear();
             gameDataAccess.clear();
         } catch (ResponseException | DataAccessException e){
+
             fail();
         }
 
@@ -47,6 +48,7 @@ public class ServerFacadeTests {
             testUserAuth = response.getAuthToken();
             serverFacade.createGame("GameTest", testUserAuth);
         } catch (ResponseException e) {
+            System.out.print(e.getMessage());
             fail();
         }
 

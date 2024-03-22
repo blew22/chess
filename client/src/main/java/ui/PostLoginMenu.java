@@ -37,7 +37,7 @@ public class PostLoginMenu {
 //    	6. Join Observer -- join an existing game as a bystander
 
     private static final Scanner scanner = new Scanner(System.in);
-    private final ServerFacade server = new ServerFacade();
+    private final ServerFacade server = new ServerFacade("http://localhost:8080");
     private final PreLoginMenu preLoginMenu;
     static ChessPiece[][] board = new ChessBoard().getBoard();
 
