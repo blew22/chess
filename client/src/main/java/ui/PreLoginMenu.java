@@ -1,7 +1,6 @@
 package ui;
 
 import exception.ResponseException;
-import model.User;
 import responses.LoginResponse;
 import responses.RegisterResponse;
 import server.ServerFacade;
@@ -33,7 +32,7 @@ public class PreLoginMenu {
                                             -->\t""";
     private static final Scanner scanner = new Scanner(System.in);
     private static ServerFacade server;
-    private final PostLoginMenu postLoginMenu = new PostLoginMenu(this, server);
+    private final PostLoginMenu postLoginMenu = new PostLoginMenu(this);
 
     public PreLoginMenu(ServerFacade server){
         PreLoginMenu.server = server;}
@@ -45,9 +44,9 @@ public class PreLoginMenu {
             case "1":
             case "register":
                 System.out.println("registering new user...");
-                String username = "";
-                String password = "";
-                String email = "";
+                String username;
+                String password;
+                String email;
                 System.out.print("Enter your username: ");
                 username = scanner.nextLine();
                 System.out.print("Enter your password: ");
@@ -67,16 +66,14 @@ public class PreLoginMenu {
 
             case "2":
             case "login":
-                String name = "";
-                String pass = "";
-                name = "";
-                pass = "";
+                String name;
+                String pass;
                 System.out.print("Enter your username: ");
                 name = scanner.nextLine();
                 System.out.print("Enter your password: ");
                 pass = scanner.nextLine();
                 try{
-                    LoginResponse response = (LoginResponse) server.login(name, pass);
+                    LoginResponse response = server.login(name, pass);
                     String auth = response.authToken;
                     System.out.print("Welcome back, " + name + ".\nYou're logged in!\n");
                     postLoginMenu.run(name, auth);
