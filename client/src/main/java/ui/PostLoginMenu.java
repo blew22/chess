@@ -95,7 +95,7 @@ public class PostLoginMenu {
                     ListGamesResponse response = server.listGames(authToken);
                     var games = response.games();
                     System.out.print(SET_TEXT_BOLD + "Existing games: " + RESET_TEXT_BOLD_FAINT + "\n");
-                    System.out.println("\t" + SET_TEXT_UNDERLINE + "ID\t\tGame Name\t\t\tWhite Player\t\tBlack Player" + RESET_TEXT_UNDERLINE);
+                    System.out.println("\t" + SET_TEXT_UNDERLINE + "ID\t\tGame Name\t\tWhite Player\t\tBlack Player" + RESET_TEXT_UNDERLINE);
                     int i = 1;
                     for (GameData game : games) {
                         NumToGameName.put(i, game.gameName());
