@@ -39,9 +39,15 @@ public class ServerFacade {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
-            http.setDoOutput(true); // what does this line do?
+            if ( method != "DELETE") {
+                http.setDoOutput(true); // what does this line do?
+                writeBody(request, http);
+            } else {
+                AuthData authData = (AuthData) request;
+                http.setRequestProperty("Authorization", authData.authToken());
+            }
 
-            writeBody(request, http); //need to add authToken to the header, not the body for logout
+            //need to add authToken to the header, not the body
             http.connect();
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
