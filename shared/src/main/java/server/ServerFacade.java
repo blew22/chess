@@ -4,15 +4,14 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import model.AuthData;
-import model.GameData;
 import model.User;
 import requests.CreateGameRequest;
 import requests.JoinGameRequest;
 import responses.*;
 
 import java.io.*;
-import java.lang.reflect.Field;
 import java.net.*;
+import java.util.Objects;
 
 public class ServerFacade {
 
@@ -72,14 +71,12 @@ public class ServerFacade {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
-            if ( method != "DELETE" && method != "GET") {
-                http.setDoOutput(true); // do for everything but logout and list games
+            if (!Objects.equals(method, "DELETE") && !Objects.equals(method, "GET")) {
+                http.setDoOutput(true); // do for all except logout and list games
                 writeBody(request, http, auth);
-
-            } else if (auth != null) { // add auth to header for all except register and login
+            } else if (auth != null) { // add auth to header for logout and list games
                 http.setRequestProperty("Authorization", auth);
             }
-
 
             http.connect();
             throwIfNotSuccessful(http);
@@ -89,10 +86,9 @@ public class ServerFacade {
         }
     }
 
-
     private static void writeBody(Object request, HttpURLConnection http, String auth) throws IOException {
         if (request != null) {
-            http.addRequestProperty("Content-Type", "application/json"); // what is this line doing?
+            http.addRequestProperty("Content-Type", "application/json");
             if (auth != null) { // add auth to header for all except register and login
                 http.setRequestProperty("Authorization", auth);
             }
@@ -106,7 +102,7 @@ public class ServerFacade {
     private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
         var status = http.getResponseCode();
         if (!isSuccessful(status)) {
-            throw new ResponseException(status, "failure: " + status);
+            throw new ResponseException(status, "HTTP failure: " + status);
         }
     }
 
@@ -122,7 +118,6 @@ public class ServerFacade {
         }
         return response;
     }
-
 
     private boolean isSuccessful(int status) {
         return status / 100 == 2;
