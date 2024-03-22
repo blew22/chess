@@ -1,15 +1,14 @@
 package server;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
 import model.User;
 import requests.CreateGameRequest;
-import responses.CreateGameResponse;
-import responses.ListGamesResponse;
-import responses.LoginResponse;
-import responses.RegisterResponse;
+import requests.JoinGameRequest;
+import responses.*;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -46,8 +45,25 @@ public class ServerFacade {
 
     public ListGamesResponse listGames(String auth) throws ResponseException {
         var path = "/game";
-
         return this.makeRequest("GET", path, null, ListGamesResponse.class, auth);
+    }
+
+    public JoinGameResponse joinGame(String auth, String color, int gameID) throws ResponseException {
+        var path = "/game";
+        ChessGame.TeamColor teamColor;
+
+        if(color.equalsIgnoreCase("black")){
+            teamColor = ChessGame.TeamColor.BLACK;
+        } else if (color.equalsIgnoreCase("white")){
+            teamColor = ChessGame.TeamColor.WHITE;
+        } else if (color.equalsIgnoreCase("observer")){
+            teamColor = null;
+        } else {
+            throw new ResponseException(400, "invalid team color");
+        }
+
+        JoinGameRequest joinGameRequest = new JoinGameRequest(auth, teamColor, gameID);
+        return this.makeRequest("PUT", path, joinGameRequest, JoinGameResponse.class, auth);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String auth) throws ResponseException {
