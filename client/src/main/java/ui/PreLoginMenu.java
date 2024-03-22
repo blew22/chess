@@ -3,6 +3,7 @@ package ui;
 import exception.ResponseException;
 import model.User;
 import responses.LoginResponse;
+import responses.RegisterResponse;
 import server.ServerFacade;
 
 import java.util.Scanner;
@@ -11,8 +12,6 @@ import static ui.EscapeSequences.RESET_TEXT_BOLD_FAINT;
 import static ui.EscapeSequences.SET_TEXT_BOLD;
 
 public class PreLoginMenu {
-    private static final Scanner scanner = new Scanner(System.in);
-    private ServerFacade server = null;
 
     public static final String preLoginMenu =
             SET_TEXT_BOLD + "Let's get started:" + RESET_TEXT_BOLD_FAINT + "\n" + """
@@ -32,10 +31,12 @@ public class PreLoginMenu {
                                             \t4. Help -- displays this information
                                             
                                             -->\t""";
-
+    private static final Scanner scanner = new Scanner(System.in);
+    private static ServerFacade server;
     private final PostLoginMenu postLoginMenu = new PostLoginMenu(this, server);
 
-    public PreLoginMenu(ServerFacade server){this.server = server;}
+    public PreLoginMenu(ServerFacade server){
+        PreLoginMenu.server = server;}
     public void run() {
         System.out.print(preLoginMenu);
         String input = scanner.nextLine();
@@ -53,9 +54,17 @@ public class PreLoginMenu {
                 password = scanner.nextLine();
                 System.out.print("Enter your email: ");
                 email = scanner.nextLine();
-                System.out.print("Welcome, " + username + ".\nYou are now registered and logged in!\n");
-                postLoginMenu.run();
-                break;
+                try{
+                    RegisterResponse response = server.register(username, password, email);
+                    String auth = response.getAuthToken();
+                    System.out.print("Welcome, " + username + ".\nYou are now registered and logged in!\n");
+                    postLoginMenu.run(username, auth);
+                    break;
+                } catch (ResponseException e){
+                    System.out.print(e.getMessage() + "\n");
+                    break;
+                }
+
             case "2":
             case "login":
                 String name = "";
@@ -68,14 +77,15 @@ public class PreLoginMenu {
                 pass = scanner.nextLine();
                 try{
                     LoginResponse response = (LoginResponse) server.login(name, pass);
+                    String auth = response.authToken;
+                    System.out.print("Welcome back, " + name + ".\nYou're logged in!\n");
+                    postLoginMenu.run(name, auth);
+                    break;
                 } catch (ResponseException e){
                     System.out.println(e.getMessage() + "\n");
+                    break;
                 }
 
-
-                System.out.print("Welcome back, " + name + ".\nYou're logged in!\n");
-                postLoginMenu.run();
-                break;
             case "3":
             case "quit":
                 System.out.print("goodbye.");

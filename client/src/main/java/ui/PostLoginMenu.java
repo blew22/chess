@@ -2,6 +2,7 @@ package ui;
 
 import chess.ChessBoard;
 import chess.ChessPiece;
+import exception.ResponseException;
 import server.ServerFacade;
 
 import java.util.Scanner;
@@ -10,11 +11,6 @@ import static ui.EscapeSequences.RESET_TEXT_BOLD_FAINT;
 import static ui.EscapeSequences.SET_TEXT_BOLD;
 
 public class PostLoginMenu {
-
-    private ServerFacade server;
-
-    private PreLoginMenu preLoginMenu;
-    static ChessPiece[][] board = new ChessBoard().getBoard();
 
     private static final String postLoginMenu =
             SET_TEXT_BOLD + "Main Menu:" + RESET_TEXT_BOLD_FAINT + "\n" + """
@@ -38,12 +34,17 @@ public class PostLoginMenu {
                                         
                     -->\t""";
 
-    private static Scanner scanner = new Scanner(System.in);
+    private static final Scanner scanner = new Scanner(System.in);
     private String input;
+    private String auth;
+    private ServerFacade server = new ServerFacade();
+    private PreLoginMenu preLoginMenu;
+    static ChessPiece[][] board = new ChessBoard().getBoard();
+    public PostLoginMenu(PreLoginMenu preLoginMenu, ServerFacade server){
+        this.preLoginMenu = preLoginMenu;}
 
-    public PostLoginMenu(PreLoginMenu preLoginMenu, ServerFacade server){this.preLoginMenu = preLoginMenu; this.server = server;}
-
-    public void run() {
+    public void run(String username, String authToken) {
+        this.auth = authToken;
         String gameName;
         String teamColor;
         int gameID;
@@ -54,19 +55,26 @@ public class PostLoginMenu {
             case "1":
             case "help":
                 System.out.print(postHelpMenu);
-                run();
+                run(username, auth);
                 break;
             case "2":
             case "logout":
-                System.out.println("Logging out...\n");
-                preLoginMenu.run();
-                break;
+                try{
+                    server.logout(username, auth);
+                    System.out.println("Logging out...\n");
+                    preLoginMenu.run();
+                    break;
+                } catch (ResponseException e){
+                    System.out.println(e.getMessage());
+                    break;
+                }
+
             case "3":
             case "create game":
                 System.out.print("Enter a name of the new game: ");
                 gameName = scanner.nextLine();
                 System.out.println("New game, " + gameName + " created with gameID xxxx.\n");
-                run();
+                run(username, auth);
                 break;
             case "4":
             case "list games":
@@ -76,7 +84,7 @@ public class PostLoginMenu {
                         \t2. game2
                         \t3. game3
                         """);
-                run();
+                run(username, auth);
                 break;
             case "5":
             case "join game":
@@ -87,7 +95,7 @@ public class PostLoginMenu {
                 teamColor = scanner.nextLine();
                 System.out.print("Joining game " + gameID + " as " + teamColor + ".\n");
                 BoardPrinter.printUI(board);
-                run();
+                run(username, auth);
                 break;
             case "6":
             case "join observer":
@@ -96,11 +104,11 @@ public class PostLoginMenu {
                 scanner.nextLine();
                 System.out.print("Joining game " + gameID + ".");
                 BoardPrinter.printUI(board);
-                run();
+                run(username, auth);
                 break;
             default:
                 System.out.print("invalid input.\ntry again.");
-                run();
+                run(username, auth);
         }
     }
 }

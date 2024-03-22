@@ -11,4 +11,8 @@ public class RegisterResponse {
         username = authData.username();
         authToken = authData.authToken();
     }
+
+    public String getAuthToken() {
+        return authToken;
+    }
 }

@@ -2,7 +2,10 @@ package server;
 
 import com.google.gson.Gson;
 import exception.ResponseException;
+import model.AuthData;
 import model.User;
+import responses.LoginResponse;
+import responses.RegisterResponse;
 
 import java.io.*;
 import java.net.*;
@@ -12,20 +15,22 @@ public class ServerFacade {
     public ServerFacade() {
     }
 
-    public Object login(String username, String password) throws ResponseException {
+    public LoginResponse login(String username, String password) throws ResponseException {
         var path = "/session";
         User user = new User(username, password, null);
-        return this.makeRequest("POST", path, user, User.class);
+        return this.makeRequest("POST", path, user, LoginResponse.class);
     }
 
-    public void deletePet(int id) throws ResponseException {
-        var path = String.format("/pet/%s", id);
-        this.makeRequest("DELETE", path, null, null);
+    public RegisterResponse register(String username, String password, String email) throws ResponseException {
+        var path = "/user";
+        User user = new User(username, password, email);
+        return this.makeRequest("POST", path, user, RegisterResponse.class);
     }
 
-    public void deleteAllPets() throws ResponseException {
-        var path = "/pet";
-        this.makeRequest("DELETE", path, null, null);
+    public void logout(String username, String auth) throws ResponseException {
+        var path = "/session";
+        AuthData authData = new AuthData(username, auth);
+        this.makeRequest("DELETE", path, authData, null);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
@@ -34,9 +39,9 @@ public class ServerFacade {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
-            http.setDoOutput(true);
+            http.setDoOutput(true); // what does this line do?
 
-            writeBody(request, http);
+            writeBody(request, http); //need to add authToken to the header, not the body for logout
             http.connect();
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);

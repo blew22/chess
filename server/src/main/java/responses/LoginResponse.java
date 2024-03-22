@@ -21,5 +21,4 @@ public class LoginResponse {
         LoginResponse response = (LoginResponse) o;
         return Objects.equals(username, response.username);
     }
-
 }
