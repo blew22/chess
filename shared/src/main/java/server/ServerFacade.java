@@ -4,10 +4,13 @@ import com.google.gson.Gson;
 import exception.ResponseException;
 import model.AuthData;
 import model.User;
+import requests.CreateGameRequest;
+import responses.CreateGameResponse;
 import responses.LoginResponse;
 import responses.RegisterResponse;
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.net.*;
 
 public class ServerFacade {
@@ -18,36 +21,42 @@ public class ServerFacade {
     public LoginResponse login(String username, String password) throws ResponseException {
         var path = "/session";
         User user = new User(username, password, null);
-        return this.makeRequest("POST", path, user, LoginResponse.class);
+        return this.makeRequest("POST", path, user, LoginResponse.class, null);
     }
 
     public RegisterResponse register(String username, String password, String email) throws ResponseException {
         var path = "/user";
         User user = new User(username, password, email);
-        return this.makeRequest("POST", path, user, RegisterResponse.class);
+        return this.makeRequest("POST", path, user, RegisterResponse.class, null);
     }
 
     public void logout(String username, String auth) throws ResponseException {
         var path = "/session";
         AuthData authData = new AuthData(username, auth);
-        this.makeRequest("DELETE", path, authData, null);
+        this.makeRequest("DELETE", path, authData, null, auth);
     }
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
+    public CreateGameResponse createGame(String gameName, String auth) throws ResponseException {
+        var path = "/game";
+        CreateGameRequest createGameRequest = new CreateGameRequest(gameName, auth);
+        return this.makeRequest("POST", path, createGameRequest, CreateGameResponse.class, auth);
+    }
+
+    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String auth) throws ResponseException {
         try {
             String serverUrl = "http://localhost:8080";
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
-            if ( method != "DELETE") {
-                http.setDoOutput(true); // what does this line do?
-                writeBody(request, http);
-            } else {
-                AuthData authData = (AuthData) request;
-                http.setRequestProperty("Authorization", authData.authToken());
+            if ( method != "DELETE" && method != "GET") {
+                http.setDoOutput(true); // do for everything but logout and list games
+                writeBody(request, http, auth);
+
+            } else if (auth != null) { // add auth to header for all except register and login
+                http.setRequestProperty("Authorization", auth);
             }
 
-            //need to add authToken to the header, not the body
+
             http.connect();
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
@@ -57,9 +66,12 @@ public class ServerFacade {
     }
 
 
-    private static void writeBody(Object request, HttpURLConnection http) throws IOException {
+    private static void writeBody(Object request, HttpURLConnection http, String auth) throws IOException {
         if (request != null) {
-            http.addRequestProperty("Content-Type", "application/json");
+            http.addRequestProperty("Content-Type", "application/json"); // what is this line doing?
+            if (auth != null) { // add auth to header for all except register and login
+                http.setRequestProperty("Authorization", auth);
+            }
             String reqData = new Gson().toJson(request);
             try (OutputStream reqBody = http.getOutputStream()) {
                 reqBody.write(reqData.getBytes());

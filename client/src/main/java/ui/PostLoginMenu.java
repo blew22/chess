@@ -3,6 +3,8 @@ package ui;
 import chess.ChessBoard;
 import chess.ChessPiece;
 import exception.ResponseException;
+import requests.CreateGameRequest;
+import responses.CreateGameResponse;
 import server.ServerFacade;
 
 import java.util.Scanner;
@@ -73,9 +75,17 @@ public class PostLoginMenu {
             case "create game":
                 System.out.print("Enter a name of the new game: ");
                 gameName = scanner.nextLine();
-                System.out.println("New game, " + gameName + " created with gameID xxxx.\n");
-                run(username, auth);
-                break;
+                try{
+                    CreateGameResponse response = (CreateGameResponse) server.createGame(gameName, auth);
+                    gameID = response.gameID;
+                    System.out.println("New game, " + gameName + " created with gameID " + gameID + " .\n");
+                    run(username, auth);
+                    break;
+                } catch(ResponseException e){
+                    System.out.println(e.getMessage());
+                    break;
+                }
+
             case "4":
             case "list games":
                 System.out.print(SET_TEXT_BOLD + "Existing games: " + RESET_TEXT_BOLD_FAINT + "\n");
